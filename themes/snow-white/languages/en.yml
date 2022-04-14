@@ -1,0 +1,21 @@
+nav:
+  home: Home
+  tags: Tags
+  archives: Archives
+  about: About
+  collect: Collect
+  search: Search
+
+post:
+  postTime: Post
+  tags: Tags
+  visit: Visit
+  donate: donate
+
+search:
+  search: Search
+
+footer:
+  powered_prefix: "Powered by"
+  powered: ""
+  theme: Theme

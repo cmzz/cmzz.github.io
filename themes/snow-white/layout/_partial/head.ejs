@@ -1,0 +1,20 @@
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="<%= config.description %>">
+<meta property="og:type" content="website">
+<meta name="description" content="<%= config.description %>">
+<meta name="keyword"  content="<%= config.keyword %>">
+<link rel="shortcut icon" href="<%= config.root %>img/favicon.ico">
+<title>
+    <% if (page.title) { %>
+    <%= page.title + ' - ' + config.SEOTitle %>
+    <% } else if (config.SEOTitle) { %>
+    <%= config.SEOTitle %>
+    <% } else { %>
+    <%= config.title %>
+    <% } %>
+</title>
+<%- css('css/tailwind.css') %>
+<%- css('css/typo.css') %>
+<script type="text/javascript" src="<%= url_for('js') %>/theme.js?v=<%= theme.version %>"></script>

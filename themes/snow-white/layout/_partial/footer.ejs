@@ -1,0 +1,31 @@
+<footer class="max-w-5xl mx-auto py-2 border-t border-solid border-gray-100 text-sm text-gray-500">
+    <div class="flex space-x-4">
+        <div class="copyright-year flex-initial">
+            <% var current = date(Date.now(), "YYYY") %>
+            &copy;
+            <% if (theme.since && theme.since != current) { %>
+                <%= theme.since %> -
+            <% } %>
+            <%= current %>
+            <span class="footer-author"><%= config.author %>.</span>
+            <span class="power-by">
+                <%= __('footer.powered_prefix') %> <a class="hexo-link text-gray-500" href="https://hexo.io/">Hexo</a> and
+                <a
+                        class="theme-link text-gray-500"
+                        href="https://github.com/frostfan/hexo-theme-polarbear">Snow White</a>
+
+                <% if (__('footer.powered') !== 'footer.powered') { %>
+                    <%= __('footer.powered') %>
+                <% } %>
+            </span>
+        </div>
+
+        <% if (theme.icp) { %>
+            <div class="flex flex-initial items-center">
+            <span>
+                <a href="https://beian.miit.gov.cn" target="_blank" class="text-gray-500"><%= theme.icp %></a>
+            </span>
+            </div>
+        <% } %>
+    </div>
+</footer>

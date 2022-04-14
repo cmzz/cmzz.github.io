@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang=<%= config.language === 'zh' ? 'zh-CN' : config.language %>>
+<%- partial('_partial/head') %>
+
+<body>
+<%- partial('_partial/header') %>
+
+<div class="index-container">
+    <% if(!is_current('/404')){%>
+    <% } %>
+
+    <div class="main-content-wrapper">
+        <%- body %>
+    </div>
+</div>
+
+<%- partial('_partial/footer', null, {cache: false}) %>
+</body>
+</html>
