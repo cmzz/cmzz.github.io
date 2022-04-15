@@ -2,8 +2,37 @@
 layout: layout
 ---
 
-<section class="max-w-5xl mx-auto py-10">
-    <div>
-        12
+<section class="max-w-3xl mx-auto py-10">
+    <div class="post-preview-container space-y-4">
+        <% page.posts.each(function(post){ %>
+            <div class="post-preview">
+                <div class="flex flex-row">
+                    <div class="basis-1/4">
+                        <div class="post-time text-gray-500"><%= post.date.format(config.date_format) %></div>
+                    </div>
+                    <div class="basis-3/4">
+                        <div class="post-info text-gray-400">
+                            <a href="<%- url_for(post.path) %>">
+                                <h3>
+                                    <%- (post.title || "Untitled").replace(/[<>&"]/g, function (c) {
+                                        return {'<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;'}[c];
+                                    }) %>
+                                </h3>
+                            </a>
+                            <p class="text-xs mt-2">
+                                <% if (post.tags.length){ %>
+                                    <span>/</span>
+                                    <% post.tags.forEach(function(tag){ %>
+                                        <a class="tag text-gray-400" href="<%= config.root %>tags/#<%= tag.name %>"
+                                           title="<%= tag.name %>"><%= tag.name %></a>
+                                        <span>/</span>
+                                    <% }) %>
+                                <% } %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
     </div>
 </section>
