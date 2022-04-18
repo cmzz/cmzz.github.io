@@ -15,6 +15,10 @@ post:
 search:
   search: Search
 
+page:
+  next: Older Posts
+  prev: Newer Posts
+
 footer:
   powered_prefix: "Powered by"
   powered: ""

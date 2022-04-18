@@ -8,7 +8,9 @@ layout: layout
             <div class="post-preview">
                 <div class="flex flex-row">
                     <div class="basis-1/4">
-                        <div class="post-time text-gray-500"><%= post.date.format(config.date_format) %></div>
+                        <div class="post-time text-sm text-gray-500">
+                            <time datetime="<%= post.date %>"><%= post.date.format(config.date_format) %></time>
+                        </div>
                     </div>
                     <div class="basis-3/4">
                         <div class="post-info text-gray-400">
@@ -37,17 +39,4 @@ layout: layout
     </div>
 </section>
 
-<div class="pagination max-w-3xl mx-auto pb-10">
-    <div class="flex flex-row">
-        <div class="flex-1">
-            <% if (page.prev){ %>
-                <a href="<%- config.root %><%- page.prev_link %>">&larr; Newer Posts</a>
-            <% } %>
-        </div>
-        <div class="flex-1 text-right">
-            <% if (page.next){ %>
-                <a href="<%- config.root %><%- page.next_link %>">Older Posts &rarr;</a>
-            <% } %>
-        </div>
-    </div>
-</div>
+<%- partial('_partial/pagination', null, {cache: false}) %>

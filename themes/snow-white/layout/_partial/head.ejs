@@ -7,14 +7,15 @@
 <meta name="keyword"  content="<%= config.keyword %>">
 <link rel="shortcut icon" href="<%= config.root %>img/favicon.ico">
 <title>
-    <% if (page.title) { %>
-    <%= page.title + ' - ' + config.SEOTitle %>
+    <% if (page.title && config.SEOTitle) { %>
+        <%= page.title + ' - ' + config.SEOTitle %>
     <% } else if (config.SEOTitle) { %>
-    <%= config.SEOTitle %>
+        <%= config.SEOTitle %>
     <% } else { %>
-    <%= config.title %>
+        <%= config.title %>
     <% } %>
 </title>
 <%- css('css/tailwind.css') %>
 <%- css('css/typo.css') %>
+<%- css('css/theme.css') %>
 <script type="text/javascript" src="<%= url_for('js') %>/theme.js?v=<%= theme.version %>"></script>

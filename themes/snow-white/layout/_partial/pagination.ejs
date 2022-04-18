@@ -1,0 +1,14 @@
+<div class="pagination max-w-3xl mx-auto pb-10 text-sm">
+    <div class="flex flex-row">
+        <div class="flex-1">
+            <% if (page.prev){ %>
+                <a href="<%- config.root %><%- page.prev_link %>">&larr; <%= __('page.prev') %></a>
+            <% } %>
+        </div>
+        <div class="flex-1 text-right">
+            <% if (page.next){ %>
+                <a href="<%- config.root %><%- page.next_link %>"><%= __('page.next') %> &rarr;</a>
+            <% } %>
+        </div>
+    </div>
+</div>

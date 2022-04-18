@@ -24,6 +24,22 @@ html {
   article, aside, details, figcaption, figure, footer, header, menu, nav, section {
     display: block;
   }
+
+  figure {
+    width: 100%;
+    overflow: hidden;
+    overflow-x: auto;
+    margin-bottom: 1.2rem;
+  }
+  figure table {
+    padding: 0;
+    margin-bottom: 0 !important;
+  }
+
+  figure .gutter pre {
+    user-select: none;
+  }
+
   
   /* HTML5 媒体文件跟 img 保持一致 */
   audio, canvas, video {
@@ -124,11 +140,11 @@ html {
   }
   
   /* 让链接在 hover 状态下显示下划线 */
-  a {
+  a, a.active {
     color: #1abc9c;
   }
-  
-  a:hover {
+
+  a:hover, a.active {
     text-decoration: underline;
   }
   
@@ -172,8 +188,9 @@ html {
   
   pre {
     background: #f8f8f8;
-    padding: 0.25em 1.1em;
+    padding: 0em 1em;
     display: block;
+    font-size: 0.8rem;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -239,6 +256,10 @@ html {
   .typo p, .typo pre, .typo ul, .typo ol, .typo dl, .typo form, .typo hr, .typo table,
   .typo-p, .typo-pre, .typo-ul, .typo-ol, .typo-dl, .typo-form, .typo-hr, .typo-table, blockquote {
     margin-bottom: 1.2em
+  }
+
+  figure pre {
+    margin-bottom: 0 !important;
   }
   
   h1, h2, h3, h4, h5, h6 {

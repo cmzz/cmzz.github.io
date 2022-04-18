@@ -15,7 +15,11 @@ post:
 search:
   search: 搜索
 
+page:
+  next: 更多文章
+  prev: 更早文章
+
 footer:
-  powered_prefix: "由"
+  powered_prefix: "本站由"
   powered: "强力驱动"
   theme: 主题

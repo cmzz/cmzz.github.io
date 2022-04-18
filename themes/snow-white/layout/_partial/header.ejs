@@ -3,21 +3,16 @@
         <div class="py-4 border-b border-slate-900/10 lg:border-0 dark:border-slate-300/10 mx-0">
             <div class="relative sm:flex sm:items-center">
                 <div class="flex-none sm:flex-initial">
-                    <a class="mr-3 flex-none overflow-hidden md:w-auto" href="<%= url_for('.') %>">
+                    <a class="flex-none overflow-hidden md:w-auto" href="<%= url_for('.') %>">
                         <span class=""><%= config.title %></span>
                     </a>
 
                     <% if(config.subtitle){ %>
-                        <span class="hidden md:inline-block text-sm text-gray-500"><i> - <%= config.subtitle %> </i></span>
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - <%= config.subtitle %> </i></span>
                     <% } %>
                 </div>
 
-                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
-                    <a href="<%= url_for(config.home_dir || '/') %>" class="whitespace-nowrap text-gray-500 hover:text-gray-900 <% if(is_home()){ %> <%- "text-gray-900" %> <% } %>"> <%= __('nav.home') %> </a>
-                    <a href="<%= url_for(config.tag_dir) %>" class="whitespace-nowrap text-gray-500 hover:text-gray-900 <% if(is_current('tags')){ %> <%- "text-gray-900" %> <% } %>"> <%= __('nav.tags') %> </a>
-                    <a href="<%= url_for(config.archive_dir) %>" class="whitespace-nowrap text-gray-500 hover:text-gray-900 <% if(is_current('archives')){ %> <%- "text-gray-900" %> <% } %>"> <%= __('nav.archives') %> </a>
-                    <a href="<%= url_for(config.about) %><%- 'about/' %>" class="whitespace-nowrap text-gray-500 hover:text-gray-900 <% if(is_current('about')){ %> <%- "text-gray-900" %> <% } %>"> <%= __('nav.about') %> </a>
-                </div>
+                <%- partial('nav', null, {cache: false}) %>
             </div>
         </div>
     </div>

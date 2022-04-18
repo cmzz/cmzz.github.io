@@ -4,14 +4,15 @@ layout: layout
 
 <section class="max-w-3xl mx-auto py-10 typo">
     <div class="post-container">
-        <h1 class="post-title">
+        <h1 class="post-title" style="margin-top: 0;">
             <%- page.title.replace(/[<>&"]/g,function(c){
                 return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];
             }) %>
         </h1>
 
         <div class="post-meta text-xs text-gray-500">
-            <span class="mr-5"><%= __('post.postTime') %>：<span><%- page.date.format(config.date_format) +" "+ page.date.format(config.time_format)%></span></span>
+            <span class="mr-5"><%= __('post.postTime') %>：<time datetime="<%= page.date %>"><%- page.date.format(config.date_format) +" "+ page.date.format(config.time_format)%></time></span>
+
             <% if (page.tags.length){ %>
             <span><%= __('post.tags') %>：/
                 <% page.tags.forEach(function(tag){ %>
@@ -23,10 +24,11 @@ layout: layout
         </div>
 
         <div class="post-content pt-10 <% if(config.post_style && !config.post_style.indent) {%>no-indent<% } %>">
+            <div class="">
+                <%- partial('_partial/toc', {item: page, index: false}) %>
+            </div>
+
             <%- page.content %>
-            <% if(config.donate){%>
-                <%- partial('_partial/donate', null, {cache: false}) %>
-            <% } %>
         </div>
     </div>
 </section>
