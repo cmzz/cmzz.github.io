@@ -32,7 +32,7 @@ html {
   
   /* 要注意表单元素并不继承父级 font 的问题 */
   body, button, input, select, textarea {
-    font: 300 1em/1.8 PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
+    font: normal 1em/1.8 PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
   }
   
   button::-moz-focus-inner,
@@ -172,12 +172,15 @@ html {
   
   pre {
     background: #f8f8f8;
-    border: 1px solid #ddd;
-    padding: 1em 1.5em;
+    padding: 0.25em 1.1em;
     display: block;
     -webkit-overflow-scrolling: touch;
   }
-  
+
+  .gutter pre {
+    background: #eee;
+  }
+
   /* 一致化 horizontal rule */
   hr {
     border: none;
@@ -240,7 +243,7 @@ html {
   
   h1, h2, h3, h4, h5, h6 {
     font-family: PingFang SC, Verdana, Helvetica Neue, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
-    font-weight: 100;
+    font-weight: normal;
     color: #000;
     line-height: 1.35;
   }
@@ -295,8 +298,8 @@ html {
   
   /* 同 ul/ol，在文章中应用 table 基本格式 */
   .typo table th, .typo table td, .typo-table th, .typo-table td, .typo table caption {
-    border: 1px solid #ddd;
-    padding: 0.5em 1em;
+    /*border: 1px solid #ddd;*/
+    /*padding: 0.5em 1em;*/
     color: #666;
   }
   

@@ -1,6 +1,6 @@
 <footer class="max-w-3xl mx-auto py-2 border-t border-solid border-gray-100 text-xs text-gray-500 pb-5">
-    <div class="flex space-x-4">
-        <div class="copyright-year flex-initial">
+    <div class="sm:flex space-y-2 sm:space-y-0 sm:space-x-4">
+        <div class="copyright-year sm:flex-initial">
             <% var current = date(Date.now(), "YYYY") %>
             &copy;
             <% if (theme.since && theme.since != current) { %>
@@ -21,10 +21,10 @@
         </div>
 
         <% if (theme.icp) { %>
-            <div class="flex flex-initial items-center">
-            <span>
-                <a href="https://beian.miit.gov.cn" target="_blank" class="text-gray-500"><%= theme.icp %></a>
-            </span>
+            <div class="flex sm:flex-initial items-center">
+                <span>
+                    <a href="https://beian.miit.gov.cn" target="_blank" class="text-gray-500"><%= theme.icp %></a>
+                </span>
             </div>
         <% } %>
     </div>

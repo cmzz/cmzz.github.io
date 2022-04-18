@@ -1,0 +1,46 @@
+---
+layout: layout
+---
+
+<%
+var years = {};
+site.posts.sort('date').reverse().forEach(function(post){
+    var year = post.date.year()
+    if(years[year]===undefined){
+        years[year] = [];
+    }
+    years[year].push(post);
+});
+%>
+
+<section class="max-w-3xl mx-auto py-10">
+    <div class="archive-container">
+        <% Object.keys(years).reverse().forEach(function(year, i){  %>
+        <div class="tag-list <%= i > 0 ? 'mt-10': '' %>">
+            <div class="tag-text text-gray-500">
+                <%= year %>
+            </div>
+
+            <% years[year].map(function(post){  %>
+                <div class="one-tag-list">
+                    <ul class="pl-10 list-disc">
+                            <li class="">
+                                <time class="mr-2 text-gray-500" datetime="<%= post.date %>"><%= post.date.format("MM-DD") %></time>
+                                <a href="<%- post.url %>" class="inline-block">
+                                    <h2 class="post-title">
+                                        <%= post.title %>
+                                    </h2>
+                                    <% if (post.subtitle && post.subtitle.length) { %>
+                                        <h3 class="post-subtitle text-sm text-gray-500">
+                                            <%- post.subtitle %>
+                                        </h3>
+                                    <% } %>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            <% }) %>
+        </div>
+        <% }) %>
+    </div>
+</section>

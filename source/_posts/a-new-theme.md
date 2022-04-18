@@ -1,4 +1,7 @@
-# hexo 的新主题
+---
+title: hexo 的新主题
+tags: 技术
+---
 
 https://hexo.io/zh-cn/docs/writing
 

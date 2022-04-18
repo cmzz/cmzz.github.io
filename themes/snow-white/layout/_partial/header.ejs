@@ -1,20 +1,21 @@
 <header class="border-b border-solid border-gray-100">
     <div class="max-w-3xl mx-auto">
-        <div class="py-4 border-b border-slate-900/10 lg:border-0 dark:border-slate-300/10 mx-4 lg:mx-0">
-            <div class="relative flex items-center">
-                <a class="mr-3 flex-none w-[2.0625rem] overflow-hidden md:w-auto" href="<%= url_for('.') %>">
-                    <span class=""><%= config.title %></span>
-                </a>
+        <div class="py-4 border-b border-slate-900/10 lg:border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="mr-3 flex-none overflow-hidden md:w-auto" href="<%= url_for('.') %>">
+                        <span class=""><%= config.title %></span>
+                    </a>
 
-                <% if(config.subtitle){ %>
-                    <span class="text-sm text-gray-500"><i> - <%= config.subtitle %> </i></span>
-                <% } %>
+                    <% if(config.subtitle){ %>
+                        <span class="hidden md:inline-block text-sm text-gray-500"><i> - <%= config.subtitle %> </i></span>
+                    <% } %>
+                </div>
 
-                <div class="hidden md:flex items-center justify-end md:flex-1 lg:w-0 space-x-4">
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
                     <a href="<%= url_for(config.home_dir || '/') %>" class="whitespace-nowrap text-gray-500 hover:text-gray-900 <% if(is_home()){ %> <%- "text-gray-900" %> <% } %>"> <%= __('nav.home') %> </a>
                     <a href="<%= url_for(config.tag_dir) %>" class="whitespace-nowrap text-gray-500 hover:text-gray-900 <% if(is_current('tags')){ %> <%- "text-gray-900" %> <% } %>"> <%= __('nav.tags') %> </a>
-                    <a href="<%= url_for(config.archive_dir) %>" class="whitespace-nowrap text-gray-500 hover:text-gray-900 <% if(is_current('archive')){ %> <%- "text-gray-900" %> <% } %>"> <%= __('nav.archives') %> </a>
-                    <a href="<%= url_for(config.collect) %><%- 'collect/' %>" class="whitespace-nowrap text-gray-500 hover:text-gray-900 <% if(is_current('collect')){ %> <%- "text-gray-900" %> <% } %>"> <%= __('nav.collect') %> </a>
+                    <a href="<%= url_for(config.archive_dir) %>" class="whitespace-nowrap text-gray-500 hover:text-gray-900 <% if(is_current('archives')){ %> <%- "text-gray-900" %> <% } %>"> <%= __('nav.archives') %> </a>
                     <a href="<%= url_for(config.about) %><%- 'about/' %>" class="whitespace-nowrap text-gray-500 hover:text-gray-900 <% if(is_current('about')){ %> <%- "text-gray-900" %> <% } %>"> <%= __('nav.about') %> </a>
                 </div>
             </div>
