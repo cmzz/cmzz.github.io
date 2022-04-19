@@ -7,7 +7,9 @@
                 <%= theme.since %> -
             <% } %>
             <%= current %>
+
             <span><%= config.author %>.</span>
+            
             <span>
                 <%= __('footer.powered_prefix') %> <a class="hexo-link " href="https://hexo.io/">Hexo</a> and
                 <a href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
@@ -17,22 +19,37 @@
             </span>
         </div>
 
-
         <div class="flex sm:flex-initial items-center">
             <% if (theme.icp) { %>
                 <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
                 <span>
-                    <a href="https://beian.miit.gov.cn" target="_blank"><%= theme.icp %></a>
+                    <%- link_to('https://beian.miit.gov.cn', theme.icp, {external: true}) %>
                 </span>
             <% } %>
 
             <% if (theme.ga) { %>
                 <span class="inline-block px-2 text-xs text-gray-400">|</span>
                 <span>
-                    <a href="http://www.beian.gov.cn/portal/registerSystemInfo" target="_blank"
-                      ><%= theme.ga %></a>
+                    <%- link_to('http://www.beian.gov.cn/portal/registerSystemInfo', theme.ga, {external: true}) %>
                 </span>
             <% } %>
+
+            <% if (theme.view_count) { %>
+                <span class="inline-block px-2 text-xs text-gray-400">|</span>
+                <span id="busuanzi_container_site_uv">
+                    <%= __('footer.uv') %>: <span id="busuanzi_value_site_uv"></span>
+                </span>
+                <span class="inline-block px-2 text-xs text-gray-400">|</span>
+                <span id="busuanzi_container_site_pv">
+                    <%= __('footer.pv') %>: <span id="busuanzi_value_site_pv"></span>
+                </span>
+            <% } %>   
         </div>
     </div>
+
+    <div class="mt-2">
+        <%- link_to('https://creativecommons.org/licenses/by-nc/4.0/deed.zh', __('footer.license'), {external: true}) %>
+    </div>
 </footer>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

@@ -9,8 +9,10 @@ nav:
 post:
   postTime: 发布于
   tags: 标签
-  visit: 访问
+  visit: 浏览
+  visit_postfix: 次
   donate: 赞赏
+  origin: 查看原文
 
 search:
   search: 搜索
@@ -23,3 +25,6 @@ footer:
   powered_prefix: "本站由"
   powered: "强力驱动"
   theme: 主题
+  uv: 访客数
+  pv: 访问量
+  license: 署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)

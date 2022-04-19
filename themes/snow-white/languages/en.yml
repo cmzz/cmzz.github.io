@@ -10,7 +10,9 @@ post:
   postTime: Post
   tags: Tags
   visit: Visit
+  visit_postfix: Times
   donate: donate
+  origin: Original Post
 
 search:
   search: Search
@@ -23,3 +25,6 @@ footer:
   powered_prefix: "Powered by"
   powered: ""
   theme: Theme
+  uv: Unique visitors
+  pv: Total page views
+  license: Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)

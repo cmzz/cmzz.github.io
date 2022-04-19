@@ -4,9 +4,9 @@ date: 2017-10-01 08:00:00
 tags:
 - 技术
 - Linux
+external: https://learnku.com/articles/10048/remember-a-fault-due-to-full-disk-inode
 ---
 
->  原文首发于　laravel　china：https://learnku.com/articles/10048/remember-a-fault-due-to-full-disk-inode
 
 ## 背景
 在一台ubuntu服务器上运行了多个laravel项目

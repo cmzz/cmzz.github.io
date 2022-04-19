@@ -5,8 +5,8 @@
 # Site
 title: 吹雨听风
 subtitle: 热爱写代码.
-description:
-keywords:
+description: 吹雨听风独立博客
+keywords: 吹雨听风,吹雨听风独立博客,PHP,Go,支付架构,
 author: 吹雨听风
 language: zh-CN
 timezone: Asia/shanghai
@@ -62,7 +62,7 @@ prismjs:
 # order_by: Posts order. (Order by date descending by default)
 index_generator:
   path: ''
-  per_page: 10
+  per_page: 20
   order_by: -date
 
 # Category & Tag

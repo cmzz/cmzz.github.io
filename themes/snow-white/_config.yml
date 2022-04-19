@@ -12,3 +12,14 @@ nav:
   showTags: false
   showAbout: false
   showHome: false
+
+post:
+  showVisit: false
+
+# 显示统计
+view_count: false
+
+# Baidu Analytics
+baidu_analytics:
+# Google Analytics
+google_analytics:

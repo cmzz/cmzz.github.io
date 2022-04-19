@@ -3,9 +3,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta property="og:description" content="<%= config.description %>">
 <meta property="og:type" content="website">
+<% if (page.description) { %>
+<meta name="description" content="<%= page.description %>">
+<% } else { %>
 <meta name="description" content="<%= config.description %>">
+<% } %>
+<% if (page.keyword) { %>
+<meta name="keyword" content="<%= page.keyword %>">
+<% } else { %>
 <meta name="keyword"  content="<%= config.keyword %>">
-<link rel="shortcut icon" href="<%= config.root %>img/favicon.ico">
+<% } %>
+<link rel="shortcut icon" href="<%= url_for('img') %>/favicon.ico">
 <%- css('css/tailwind.css') %>
 <%- css('css/typo.css') %>
 <%- css('css/theme.css') %>
@@ -15,7 +23,9 @@
         <%= page.title + ' - ' + config.SEOTitle %>
     <% } else if (config.SEOTitle) { %>
         <%= config.SEOTitle %>
+    <% } else if (page.title) { %>
+        <%= page.title + ' - ' + config.title %>
     <% } else { %>
         <%= config.title %>
     <% } %>
-</title>
+</title>    

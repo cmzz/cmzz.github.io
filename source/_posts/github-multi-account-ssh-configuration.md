@@ -5,9 +5,9 @@ tags:
 - 容器
 - docker
 date: 2017-01-01 08:00:00
+external: https://learnku.com/articles/4411/github-multi-account-ssh-configuration
 ---
 
-> 首发于 laravel china：https://learnku.com/articles/4411/github-multi-account-ssh-configuration
 
 ##  背景
 有这样的情况，现在有 2 个 github 账号。现在都想使用 ssh key 的方式拉取代码。但是第二个账号无法使用，怎么办?

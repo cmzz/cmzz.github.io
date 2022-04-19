@@ -5,10 +5,10 @@ tags:
 - HTTPS
 - 网络
 date: 2017-04-10 08:00:00
+external: https://learnku.com/articles/3754/behind-the-https
 ---
 
 > 这是一篇内部分享文
-> 首发于 laravel china：https://learnku.com/articles/3754/behind-the-https
 
 ![file](https://cdn.learnku.com/uploads/images/201702/06/4949/nx3raoaCAR.png)
 
