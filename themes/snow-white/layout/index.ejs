@@ -6,14 +6,14 @@ layout: layout
     <div class="post-preview-container space-y-4">
         <% page.posts.each(function(post){ %>
             <div class="post-preview">
-                <div class="flex flex-row">
-                    <div class="basis-1/4">
-                        <div class="post-time text-sm text-gray-500">
+                <div class="md:flex md:flex-row">
+                    <div class="hidden md:block md:basis-1/4">
+                        <div class="text-sm text-gray-500">
                             <time datetime="<%= post.date %>"><%= post.date.format(config.date_format) %></time>
                         </div>
                     </div>
-                    <div class="basis-3/4">
-                        <div class="post-info text-gray-400">
+                    <div class="md:basis-3/4">
+                        <div class="text-gray-400">
                             <a href="<%- url_for(post.path) %>">
                                 <h3>
                                     <%- (post.title || "Untitled").replace(/[<>&"]/g, function (c) {
@@ -22,18 +22,26 @@ layout: layout
                                 </h3>
                             </a>
 
-                            <p class="text-xs mt-2">
-                                <% if (post.tags.length){ %>
-                                    <span>/</span>
-                                    <% post.tags.forEach(function(tag, i){ %>
-                                        <a class="tag text-gray-500" href="<%= config.root %>tags/#<%= tag.name %>"
-                                           title="<%= tag.name %>"><%= tag.name %></a>
-                                        <% if (i < post.tags.length - 1) { %>
+                            <div class="text-xs mt-2">
+                                <div class="inline-block md:hidden">
+                                    <div class="text-sm text-gray-500">
+                                        <time datetime="<%= post.date %>"><%= post.date.format(config.date_format) %></time>
+                                    </div>
+                                </div>
+
+                                <p class="hidden md:inline-block">
+                                    <% if (post.tags.length){ %>
                                         <span>/</span>
-                                        <% } %>
-                                    <% }) %>
-                                <% } %>
-                            </p>
+                                        <% post.tags.forEach(function(tag, i){ %>
+                                            <a class="text-gray-500" href="<%= config.root %>tags/#<%= tag.name %>"
+                                               title="<%= tag.name %>"><%= tag.name %></a>
+                                            <% if (i < post.tags.length - 1) { %>
+                                            <span>/</span>
+                                            <% } %>
+                                        <% }) %>
+                                    <% } %>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>

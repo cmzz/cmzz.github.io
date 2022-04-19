@@ -103,5 +103,5 @@ theme: snow-white
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: git@github.com:cmzz/myblog.github.io.git
+  repo: git@github.com:cmzz/cmzz.github.io.git
   branch: main

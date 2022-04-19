@@ -1,14 +1,14 @@
 <footer class="max-w-3xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
     <div class="sm:flex space-y-2 sm:space-y-0">
-        <div class="copyright-year sm:flex-initial">
+        <div class="sm:flex-initial">
             <% var current = date(Date.now(), "YYYY") %>
             &copy;
             <% if (theme.since && theme.since != current) { %>
                 <%= theme.since %> -
             <% } %>
             <%= current %>
-            <span class="footer-author"><%= config.author %>.</span>
-            <span class="power-by">
+            <span><%= config.author %>.</span>
+            <span>
                 <%= __('footer.powered_prefix') %> <a class="hexo-link " href="https://hexo.io/">Hexo</a> and
                 <a href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
                 <% if (__('footer.powered') !== 'footer.powered') { %>
@@ -21,16 +21,16 @@
         <div class="flex sm:flex-initial items-center">
             <% if (theme.icp) { %>
                 <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
-                <span class="">
-                    <a href="https://beian.miit.gov.cn" target="_blank" class=""><%= theme.icp %></a>
+                <span>
+                    <a href="https://beian.miit.gov.cn" target="_blank"><%= theme.icp %></a>
                 </span>
             <% } %>
 
             <% if (theme.ga) { %>
                 <span class="inline-block px-2 text-xs text-gray-400">|</span>
-                <span class="">
+                <span>
                     <a href="http://www.beian.gov.cn/portal/registerSystemInfo" target="_blank"
-                       class=""><%= theme.ga %></a>
+                      ><%= theme.ga %></a>
                 </span>
             <% } %>
         </div>

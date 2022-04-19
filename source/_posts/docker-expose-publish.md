@@ -1,7 +1,9 @@
 ---
 title: docker 端口的 expose 与 publish
 date: 2018-08-24 10:36:48
-tags: 技术
+tags: 
+- 技术
+- docker
 ---
 
 在 `Dockerfile` 里通过 `Expose` 导出一个 `80` 的端口:
