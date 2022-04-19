@@ -21,13 +21,16 @@ layout: layout
                                     }) %>
                                 </h3>
                             </a>
+
                             <p class="text-xs mt-2">
                                 <% if (post.tags.length){ %>
                                     <span>/</span>
-                                    <% post.tags.forEach(function(tag){ %>
-                                        <a class="tag text-gray-400" href="<%= config.root %>tags/#<%= tag.name %>"
+                                    <% post.tags.forEach(function(tag, i){ %>
+                                        <a class="tag text-gray-500" href="<%= config.root %>tags/#<%= tag.name %>"
                                            title="<%= tag.name %>"><%= tag.name %></a>
+                                        <% if (i < post.tags.length - 1) { %>
                                         <span>/</span>
+                                        <% } %>
                                     <% }) %>
                                 <% } %>
                             </p>

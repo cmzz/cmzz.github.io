@@ -6,6 +6,10 @@
 <meta name="description" content="<%= config.description %>">
 <meta name="keyword"  content="<%= config.keyword %>">
 <link rel="shortcut icon" href="<%= config.root %>img/favicon.ico">
+<%- css('css/tailwind.css') %>
+<%- css('css/typo.css') %>
+<%- css('css/theme.css') %>
+<script type="text/javascript" src="<%= url_for('js') %>/theme.js?v=<%= theme.version %>"></script>
 <title>
     <% if (page.title && config.SEOTitle) { %>
         <%= page.title + ' - ' + config.SEOTitle %>
@@ -15,7 +19,3 @@
         <%= config.title %>
     <% } %>
 </title>
-<%- css('css/tailwind.css') %>
-<%- css('css/typo.css') %>
-<%- css('css/theme.css') %>
-<script type="text/javascript" src="<%= url_for('js') %>/theme.js?v=<%= theme.version %>"></script>

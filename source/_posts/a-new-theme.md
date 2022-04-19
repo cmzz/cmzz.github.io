@@ -1,5 +1,5 @@
 ---
-title: hexo 的新主题
+title: 给博客上了一款新主题
 tags: 技术
 ---
 

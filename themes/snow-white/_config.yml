@@ -1,4 +1,14 @@
 __: snow-white
-  
+
 since: 2018
-icp: 123456
+# icp 备案号
+icp:
+# 公安备案号
+ga:
+
+# 导航元素
+nav:
+  showArchives: false
+  showTags: false
+  showAbout: false
+  showHome: false

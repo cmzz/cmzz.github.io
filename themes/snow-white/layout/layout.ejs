@@ -11,7 +11,10 @@
         <% if(!is_current('/404')){%>
         <% } %>
 
-        <%- body %>
+        <main>
+            <%- body %>
+        </main>
+
         <%- partial('_partial/footer', null, {cache: false}) %>
     </div>
 </div>

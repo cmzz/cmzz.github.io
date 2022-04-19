@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 814' Forever
+title: 吹雨听风
 subtitle: 热爱写代码.
 description:
 keywords:
-author: wz
+author: 吹雨听风
 language: zh-CN
 timezone: Asia/shanghai
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://example.com
+url: https://www.wewx.cn
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -103,4 +103,5 @@ theme: snow-white
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: git@cmz.github.com:cmzz/cmzz.github.io.git
+  repo: git@github.com:cmzz/myblog.github.io.git
+  branch: main

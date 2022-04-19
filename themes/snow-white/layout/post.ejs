@@ -2,7 +2,7 @@
 layout: layout
 ---
 
-<section class="max-w-3xl mx-auto py-10 typo">
+<article class="max-w-3xl mx-auto py-10 typo">
     <div class="post-container">
         <h1 class="post-title" style="margin-top: 0;">
             <%- page.title.replace(/[<>&"]/g,function(c){
@@ -10,17 +10,23 @@ layout: layout
             }) %>
         </h1>
 
-        <div class="post-meta text-xs text-gray-500">
-            <span class="mr-5"><%= __('post.postTime') %>：<time datetime="<%= page.date %>"><%- page.date.format(config.date_format) +" "+ page.date.format(config.time_format)%></time></span>
+        <div class="post-meta">
+            <span>
+                <time datetime="<%= page.date %>"><%- page.date.format(config.date_format) %>
+                </time>
+            </span>
 
             <% if (page.tags.length){ %>
-            <span><%= __('post.tags') %>：/
-                <% page.tags.forEach(function(tag){ %>
+            <div class="mt-2">
+                <span><%= __('post.tags') %>：</span>
+                <% page.tags.forEach(function(tag, i){ %>
                     <a class="tag text-gray-500 no-underline" href="<%= config.root %>tags/#<%= tag.name %>" title="<%= tag.name %>"><%= tag.name %></a>
-                    <span>/</span>
+                    <% if (i < page.tags.length - 1) { %>
+                    <span>,</span>
+                    <% } %>
                 <% }) %>
-                <% } %>
-            </span>
+            </div>
+            <% } %>
         </div>
 
         <div class="post-content pt-10 <% if(config.post_style && !config.post_style.indent) {%>no-indent<% } %>">
@@ -31,4 +37,4 @@ layout: layout
             <%- page.content %>
         </div>
     </div>
-</section>
+</article>
