@@ -105,3 +105,5 @@ deploy:
   type: git
   repo: git@github.com:cmzz/cmzz.github.io.git
   branch: main
+
+rss: /rss_feed.xml
