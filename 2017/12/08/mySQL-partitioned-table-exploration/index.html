@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="吹雨听风独立博客">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        MySQL 分区表探索 - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        MySQL 分区表探索
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Fri Dec 08 2017 00:00:00 GMT+0000">2017-12-08</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+            <div class="mt-2">
+                <span>Tags：</span>
+                
+                    <a class="" href="/tags/#技术"
+                       title="技术">技术</a>
+                    
+                        <span>,</span>
+                    
+                
+                    <a class="" href="/tags/#MySQL"
+                       title="MySQL">MySQL</a>
+                    
+                
+            </div>
+        
+    </div>
+
+    <section class="pt-10 ">
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>如果需要定时清理一张普通大表里的历史数据。</p>
+<p>可以使用一个或多个带 where 条件的 delete 语句去删除（where条件是时间）。 如果表数据量较大，这对数据库的造成了很大压力。即使我们把这些旧数据删除了，但是底层的数据文件并没有变小。</p>
+<blockquote>
+<p>为什么没有变小？<br>当删除数据 时，MYSQL 并不会立即回收表空间。被已删除数据的占据的存储空间，以及索引位会空在那里，等待新的数据来弥补这个空缺。<br>强行回收： OPTIMIZE TABLE</p>
+</blockquote>
+<p>面对这类问题，其实最有效的方法就是在使用分区表。分区表最大的优点就是可以非常高效的进行历史数据的清理。</p>
+<h2 id="关于分区表"><a href="#关于分区表" class="headerlink" title="关于分区表"></a>关于分区表</h2><p>分区表不是在存储引擎层完成的。这是 MySQL 支持的功能（5.1开始）</p>
+<p>原理：<br>将表索引分解为多个更小、更可管理的部分。</p>
+<p>从逻辑上讲，只有一个表或者索引，但是物理上这个表或者索引可能由数十个物理分区组成。</p>
+<p>分区表最大的优点就是可以非常高效的进行历史数据的清理。</p>
+<p>每个分区都是独立的对象，可以独自处理，也可以作为一个更大对象的一部分进行处理（如果分区表很大，亦可以将分区分配到不同的磁盘上去）。</p>
+<p>在执行查询的时候，优化器会根据分区定义过滤哪些没有我们需要数据的分区，这样查询就无须全表扫描所有分区，只查找包含需要数据的分区即可。</p>
+<h2 id="检查分区功能是否启用"><a href="#检查分区功能是否启用" class="headerlink" title="检查分区功能是否启用"></a>检查分区功能是否启用</h2><pre><code>mysql&gt; SHOW PLUGINS \G;
+
+*************************** 43. row ***************************
+   Name: partition
+ Status: ACTIVE
+   Type: STORAGE ENGINE
+Library: NULL
+License: GPL
+</code></pre>
+<h2 id="分区类型"><a href="#分区类型" class="headerlink" title="分区类型"></a>分区类型</h2><p>MySQL目前只支持 水平分区（水平分区就是将不同的行分配到不同的物理文件中）。</p>
+<ul>
+<li><p>范围分区（RANGE）<br>行数据基于一个给定的连续区间的值被放入分区。</p>
+</li>
+<li><p>列表分区（LIST）<br>和 RANGE 分区类似，只不过面向的是离散的值。</p>
+</li>
+<li><p>哈希分区（HASH）<br>根据用户自定义的表达式返回的值来区分放入那个分区。</p>
+</li>
+<li><p>KEY分区<br>根据 MySQL 数据库提供的哈希函数来进行分区。</p>
+</li>
+<li><p>COLUMNS 分区<br>可以对多个列的值进行分区。（MySQL 5.5+ 开始支持）。</p>
+</li>
+</ul>
+<h2 id="RANGE-分区"><a href="#RANGE-分区" class="headerlink" title="RANGE 分区"></a>RANGE 分区</h2><p>这是最常用的一种分区类型。最常见的是基于时间字段（基于分区的列最好是整型）来分区。<br>分区的列可以允许 null 值，如果分区的列值是 null，则会选择第一个分区。</p>
+<pre><code>CREATE TABLE range_partition_test (
+    id INT,
+    pdate INT
+)
+PARTITION BY RANGE (pdate) (
+    PARTITION p1 VALUES LESS THAN ( 201702 ),
+    PARTITION p2 VALUES LESS THAN ( 201703 ),
+    PARTITION p3 VALUES LESS THAN ( 201704 ),
+    PARTITION p4 VALUES LESS THAN (MAXVALUE)
+);
+</code></pre>
+<p><code>MAXVALUE</code> 是一个无穷大的值，所以p4 分区即为默认的分区。</p>
+<p>在执行查询的时候，带上分区字段，这样可以使用分区剪裁功能。</p>
+<pre><code>mysql&gt; select * from range_partition_test;
++------+--------+
+| id   | pdate  |
++------+--------+
+|    1 | 201701 |
+|    2 | 201702 |
+|    3 | 201703 |
+|    4 | 201704 |
+|    5 | 201705 |
++------+--------+
+
+
+mysql&gt; explain partitions select * from range_partition_test where pdate between 201702 and 201703;
++----+-------------+----------------------+------------+------+---------------+------+---------+------+------+----------+-------------+
+| id | select_type | table                | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
++----+-------------+----------------------+------------+------+---------------+------+---------+------+------+----------+-------------+
+|  1 | SIMPLE      | range_partition_test | p2,p3      | ALL  | NULL          | NULL | NULL    | NULL |    2 |    50.00 | Using where |
++----+-------------+----------------------+------------+------+---------------+------+---------+------+------+----------+-------------+
+</code></pre>
+<p>只查询了p2,p3分区。</p>
+<h2 id="LIST-分区"><a href="#LIST-分区" class="headerlink" title="LIST 分区"></a>LIST 分区</h2><p>LIST 分区和 RANGE 分区类似。<br>区别在于 LIST 是枚举值列表的集合，RANGE 是连续的区间值的集合。二者在语法方面非常的相似。<br>建议 LIST 分区列是非 null 列，否则插入 null 值如果枚举列表里面不存在 null 值会插入失败（和 RANGE 分区不一样）。</p>
+<pre><code>CREATE TABLE list_partition_test (
+    id INT,
+    pdate INT
+)
+PARTITION BY LIST (pdate) (
+    PARTITION p1 VALUES IN (1,3,5,7,9),
+    PARTITION p2 VALUES IN (2,4,6,8,0)
+);
+</code></pre>
+<h2 id="Hash-分区"><a href="#Hash-分区" class="headerlink" title="Hash 分区"></a>Hash 分区</h2><p>HASH 分区的目的是讲数据均匀的分不到预先定义的各个分区中。保证各个分区的记录数量大体上都是一致的。</p>
+<p>在实际工作中经常遇到像会员表的这种表。并没有明显可以分区的特征字段。但表数据有非常庞大。这时候可以使用 HASH 分区。</p>
+<p>基于给定的分区个数，将数据分配到不同的分区，HASH分区只能针对整数进行 HASH。</p>
+<pre><code>CREATE TABLE hash_partition_test (
+    id INT,
+    pdate INT
+)
+PARTITION BY HASH(id)
+PARTITIONS 4;
+</code></pre>
+<ul>
+<li>上面的分区对象(id)也可以是一个表达式，表达式的结果必须是整数值。</li>
+<li>HASH 分区可以不用指定 PARTITIONS 子句，则默认分区数为1。</li>
+<li>不允许只写 PARTITIONS，而不指定分区数。</li>
+<li>HASH 分区的底层实现其实是基于 MOD 函数。</li>
+</ul>
+<h2 id="KEY-分区"><a href="#KEY-分区" class="headerlink" title="KEY 分区"></a>KEY 分区</h2><p>KEY 分区和 HASH 分区相似。不同之处在于：</p>
+<ul>
+<li>KEY 分区允许多列，而 HASH 分区只允许一列。</li>
+<li>如果在有主键或者唯一键的情况下，key 中分区列可不指定，默认为主键或者唯一键，如果没有，则必须显性指定列。</li>
+<li>KEY 分区对象必须为列，而不能是基于列的表达式。</li>
+<li>KEY 分区和 HASH 分区的算法不一样，对于 innodb 引擎，采用的是 MD5 值来分区。</li>
+</ul>
+<h2 id="COLUMNS-分区"><a href="#COLUMNS-分区" class="headerlink" title="COLUMNS 分区"></a>COLUMNS 分区</h2><p>可以直接使用非整型的数据进行分区。分区根据类型直接比较而得，不需要转化为整型。同时，可以对多个列值进行分区。</p>
+<pre><code>CREATE TABLE listvardou (
+    id INT,
+    pdate INT
+)
+PARTITION BY LIST COLUMNS(id,pdate)
+(
+    PARTITION a VALUES IN ( (1, 201701), (1, 201702), (1, 201703)),
+    PARTITION b VALUES IN ( (2, 201702) )
+    PARTITION b VALUES IN ( (3, 201703) )
+);
+</code></pre>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>RANGE 分区，LIST 分区，HASH 分区，KEY 分区对象返回的只能是整数值，如果不是整型，则需要使用函数将其转化为整型。</li>
+<li>数据表非常大以至于无法全部都放到内存，或者只在表的最后部分有热点数据，其他均为历史数据的情况下，可以选用分区表。</li>
+<li>分区表数据更容易维护（可独立对分区进行优化、检查、修复及批量删除大数据可以采用drop分区的形式等）。</li>
+<li>分区表的数据可以分布在不同的物理设备上，从而高效地利用多个硬件设备。</li>
+<li>可以备份和恢复独立的分区，非常适用于大数据集的场景。</li>
+<li>分区的主要目的是用于数据库的高可用性管理。</li>
+</ul>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2022
+
+            <span>吹雨听风.</span>
+            
+            <span>
+                Powered by <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+               
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)" target="_blank" rel="noopener">Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+    </div>
+</div>
+
+</body>
+</html>

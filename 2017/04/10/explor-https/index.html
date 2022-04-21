@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="吹雨听风独立博客">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        https背后的内幕 - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        https背后的内幕
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Mon Apr 10 2017 00:00:00 GMT+0000">2017-04-10</time>
+                </span>
+
+            
+
+            
+                <span class="px-3 text-gray-300">|</span>
+                <a href="https://learnku.com/articles/3754/behind-the-https" title="post.external" target="_blank" rel="noopener">post.external</a>
+            
+        </div>
+
+        
+            <div class="mt-2">
+                <span>Tags：</span>
+                
+                    <a class="" href="/tags/#技术"
+                       title="技术">技术</a>
+                    
+                        <span>,</span>
+                    
+                
+                    <a class="" href="/tags/#HTTPS"
+                       title="HTTPS">HTTPS</a>
+                    
+                        <span>,</span>
+                    
+                
+                    <a class="" href="/tags/#网络"
+                       title="网络">网络</a>
+                    
+                
+            </div>
+        
+    </div>
+
+    <section class="pt-10 ">
+        <blockquote>
+<p>这是一篇内部分享文</p>
+</blockquote>
+<p><img src="https://cdn.learnku.com/uploads/images/201702/06/4949/nx3raoaCAR.png" alt="file"></p>
+<p>背景：  2016年底 iOS App 强制要求使用HTTPS协议。Chrome 计划在2017年将所有使用非 HTTPS 协议的网站标记为不安全，并在地址栏的前面显示一个红叉。Mozilla 宣布所有的新特性将只提供给 HTTPS 网站，HTTP 网站将逐步被禁止访问浏览器功能。</p>
+<h2 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h2><h3 id="HTTP-的缺点"><a href="#HTTP-的缺点" class="headerlink" title="HTTP 的缺点"></a>HTTP 的缺点</h3><h4 id="使用明文通信"><a href="#使用明文通信" class="headerlink" title="使用明文通信"></a>使用明文通信</h4><p>http 没有加密功能， 无法对请求和响应的内容加密。内容在经过网络中间节点是容易被窃听。<br><img src="https://cdn.learnku.com/uploads/images/201702/06/4949/4y5A5AGezM.png" alt="file"></p>
+<h4 id="不验证通信方身份"><a href="#不验证通信方身份" class="headerlink" title="不验证通信方身份"></a>不验证通信方身份</h4><p>HTTP  在请求和响应时， 不确认通信双方的身份。也就是说， 客户端无法确认返回的消息就是从真正的服务器上返回的， 有可能是从伪装的服务器上返回的。</p>
+<p>同时， 服务端也不知道接收响应的客户端是否就是正真的目标客户端。<br>这就是中间人攻击。</p>
+<p><img src="https://cdn.learnku.com/uploads/images/201702/06/4949/8CntTKYspj.png" alt="file"></p>
+<h4 id="不验证报文完整性"><a href="#不验证报文完整性" class="headerlink" title="不验证报文完整性"></a>不验证报文完整性</h4><p>客户端端和服务端都无法确认收到的消息是否就是对方发送的原始消息， 有可能中间被修改。<br><img src="https://cdn.learnku.com/uploads/images/201702/06/4949/9DUNSe7JeX.png" alt="file"></p>
+<h2 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h2><p>在不安全的网络上创建一安全信道。</p>
+<h3 id="什么是HTTPS"><a href="#什么是HTTPS" class="headerlink" title="什么是HTTPS"></a>什么是HTTPS</h3><blockquote>
+<p>TLS是传输层安全协议（Transport Layer Security）的缩写，是一种对基于网络的传输的加密协议，可以在受信任的第三方公证基础上做双方的身份认证。</p>
+</blockquote>
+<blockquote>
+<p>SSL是TLS的前身，现在已不再更新  &gt;  <a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000002554673">TSL&#x2F;SSL 原理</a></p>
+</blockquote>
+<blockquote>
+<p>HTTPS是在基于TLS&#x2F;SSL的安全套接字上的的应用层协议，除了传输层进行了加密外，其它与常规HTTP协议基本保持一致</p>
+</blockquote>
+<p>简单来说就是 HTTPS &#x3D; HTTP + TLS&#x2F;SSL</p>
+<p><img src="https://cdn.learnku.com/uploads/images/201702/06/4949/mKHv5Gv2rd.png" alt="file"></p>
+<h3 id="如何弥补HTTP缺点的"><a href="#如何弥补HTTP缺点的" class="headerlink" title="如何弥补HTTP缺点的"></a>如何弥补HTTP缺点的</h3><h4 id="加密"><a href="#加密" class="headerlink" title="加密"></a>加密</h4><h5 id="加密方式"><a href="#加密方式" class="headerlink" title="加密方式"></a>加密方式</h5><ol>
+<li><p>共享秘钥加密（对称密钥加密）</p>
+<blockquote>
+<p>使用双方共同拥有的单个密钥。这种密钥既用于加密，也用于解密，叫做机密密钥。</p>
+</blockquote>
+</li>
+<li><p>公开秘钥加密（非对称加密）</p>
+<blockquote>
+<p>一个公钥和一个私钥，这两个密钥在数学上是相关的。在公钥加密中，公钥可在通信双方之间公开传递，或在公用储备库中发布，但相关的私钥是保密的。只有使用私钥才能解密用公钥加密的数据。使用私钥加密的数据只能用公钥解密。<img src="https://cdn.learnku.com/uploads/images/201702/06/4949/188EVQy31L.png" alt="file"></p>
+</blockquote>
+</li>
+</ol>
+<p>在HTTP应用中单纯的使用上面的任一中加密方式都存在问题：</p>
+<ul>
+<li>服务端如何安全的将秘钥发送给客户端？如果通信被窃听， 那么攻击者就在获得密文的同时获得秘钥，加密也就失去了意义。</li>
+<li>如何让所有的客户端持有公钥？ 客户端如何确认收到的公开秘钥不是从中间人发送过来的假秘钥而是货真价实的真秘钥？</li>
+</ul>
+<h5 id="HTTPS-的加密方式"><a href="#HTTPS-的加密方式" class="headerlink" title="HTTPS 的加密方式"></a>HTTPS 的加密方式</h5><p>HTTPS 使用混合使用2中加密方式， 同时使用证书来证明公钥的正确性。</p>
+<h4 id="认证"><a href="#认证" class="headerlink" title="认证"></a>认证</h4><p>目的： 为保证双方传递信息的 真实性、可靠性、完整性。</p>
+<p>CA:  证书认证中心 (Certificate Authority) 中心。是一个负责发放和管理数字证书的第三方权威机构。</p>
+<p>认证流程:</p>
+<ol>
+<li><p>把证书请求 (ssl.csr) 发给证书机构。</p>
+</li>
+<li><p>CA 确认申请人身份后使用 CA 机构的私钥对服务器公钥进行数字签名， 同时把已签名的公钥分配给机构， 并且把证书和公钥及签名进行绑定。</p>
+<blockquote>
+<p>也就是证书里面包含了服务器公钥 + CA 对公钥的数字签名。</p>
+</blockquote>
+</li>
+<li><p>服务器把证书发送给客户端（浏览器）</p>
+</li>
+<li><p>客户端使用CA机构的公钥验证证书上的数字签名。 如果验证通过，则表明：</p>
+<ul>
+<li>CA 的认证服务器是有效的</li>
+<li>CA 的公钥是有效的</li>
+<li>服务器的公钥是有效的</li>
+</ul>
+<blockquote>
+<p>合法的CA机构的公钥是内置在浏览器中的。</p>
+</blockquote>
+</li>
+<li><p>客户端使用服务器的公钥对报文加密</p>
+</li>
+<li><p>服务器使用私钥解密报文</p>
+</li>
+</ol>
+<h3 id="既然我们有开源的-openssl，-为什么还要去购买ssl证书"><a href="#既然我们有开源的-openssl，-为什么还要去购买ssl证书" class="headerlink" title="既然我们有开源的 openssl， 为什么还要去购买ssl证书?"></a>既然我们有开源的 openssl， 为什么还要去购买ssl证书?</h3><h4 id="https-安全的前提"><a href="#https-安全的前提" class="headerlink" title="https 安全的前提"></a>https 安全的前提</h4><p>数字证书颁发机构（CA）被客户端和服务端绝对信任。</p>
+<h4 id="自签名证书"><a href="#自签名证书" class="headerlink" title="自签名证书"></a>自签名证书</h4><blockquote>
+<p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000002569859">基于OpenSSL自建CA和颁发SSL证书</a></p>
+</blockquote>
+<p>就是自己扮演 CA 机构，自己给自己的服务器颁发证书。</p>
+<p>由于自签名证书无法排除被中间人伪造的可能， 所有浏览器对自签名证书不信任，浏览的时候回给出风险提示。</p>
+<p><img src="https://cdn.learnku.com/uploads/images/201702/06/4949/gVSU1kcUtQ.png" alt="file"></p>
+<p><strong>因此， 只有值得信赖的第三方机构介入， 才能让植入在浏览器中的认证机构公开秘钥发挥作用， 从而借此证明服务器的真实性。</strong></p>
+<h4 id="漏洞"><a href="#漏洞" class="headerlink" title="漏洞"></a>漏洞</h4><p>Mozilla 和 Google 宣布对 WoSign 和 StartCom ( StartSSL ) 一年内新签发的所有SSL证书不信任。</p>
+<blockquote>
+<p>360 &gt; WoSign &gt; StartCom</p>
+</blockquote>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2022
+
+            <span>吹雨听风.</span>
+            
+            <span>
+                Powered by <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+               
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)" target="_blank" rel="noopener">Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+    </div>
+</div>
+
+</body>
+</html>

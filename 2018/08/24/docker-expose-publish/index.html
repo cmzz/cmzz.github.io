@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="吹雨听风独立博客">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        docker 端口的 expose 与 publish - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        docker 端口的 expose 与 publish
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Fri Aug 24 2018 02:36:48 GMT+0000">2018-08-24</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+            <div class="mt-2">
+                <span>Tags：</span>
+                
+                    <a class="" href="/tags/#技术"
+                       title="技术">技术</a>
+                    
+                        <span>,</span>
+                    
+                
+                    <a class="" href="/tags/#docker"
+                       title="docker">docker</a>
+                    
+                
+            </div>
+        
+    </div>
+
+    <section class="pt-10 ">
+        <p>在 <code>Dockerfile</code> 里通过 <code>Expose</code> 导出一个 <code>80</code> 的端口:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EXPOSE 80</span><br></pre></td></tr></table></figure>
+
+<p>启动容器后,发现还是无法本机的 <code>80</code> 端口访问容器内服务。只有在启动时通过 <code>-p</code> 参数publish 端口才可以，像下面这样:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 8080:80 demo</span><br></pre></td></tr></table></figure>
+
+<p>这是为啥呢?<br>都已经在 <code>Dockerfile</code> 里面 <code>Expose</code> 为啥还不能直接访问?</p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>使用下面4中不同的方法启动容器:</p>
+<ul>
+<li>不在 <code>Dockerfile</code> 里 <code>EXPOSE</code>，也不通过 <code>-p</code> 参数指定</li>
+<li>在 <code>Dockerfile</code> 里 <code>EXPOSE</code>，但不使用 <code>-p</code> 参数</li>
+<li>在 <code>Dockerfile</code> 里 <code>EXPOSE</code>，也使用 <code>-p</code> 参数</li>
+<li>只使用 <code>-p</code> 参数</li>
+</ul>
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><ul>
+<li>第一中情况: 不能在外网访问，也不能被 link 的 container 访问</li>
+<li>第二种情况: 不能被外网访问，但是能被 link 的 container 访问</li>
+<li>第三种情况: 能被外网访问，也能被 link 容器访问</li>
+<li>第四中情况: 和第三种情况一样</li>
+</ul>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p><code>EXPOSE</code> 只是导出端口。只是一个声明，在运行时并不会因为这个声明应用就会开启这个端口的服务。<br>在 <code>Dockerfile</code> 中写入这样的声明有两个好处，一个是帮助镜像使用者理解这个镜像服务的守护端口，以方便配置映射；另一个用处则是在运行时使用随机端口映射时，也就是 <code>docker run -P</code> 时，会自动随机映射 <code>EXPOSE</code> 的端口。</p>
+<p>通过 <code>docker ps</code> 命令，可以看到，端口的映射关系。</p>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2022
+
+            <span>吹雨听风.</span>
+            
+            <span>
+                Powered by <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+               
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)" target="_blank" rel="noopener">Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+    </div>
+</div>
+
+</body>
+</html>

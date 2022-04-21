@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="吹雨听风独立博客">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        docker 网络之端口映射不完全探索 - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        docker 网络之端口映射不完全探索
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Fri Jul 20 2018 00:00:00 GMT+0000">2018-07-20</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+            <div class="mt-2">
+                <span>Tags：</span>
+                
+                    <a class="" href="/tags/#技术"
+                       title="技术">技术</a>
+                    
+                        <span>,</span>
+                    
+                
+                    <a class="" href="/tags/#docker"
+                       title="docker">docker</a>
+                    
+                        <span>,</span>
+                    
+                
+                    <a class="" href="/tags/#容器"
+                       title="容器">容器</a>
+                    
+                
+            </div>
+        
+    </div>
+
+    <section class="pt-10 ">
+        <p>这篇文章实在团队内部的分享，如下：</p>
+<p>今天的分享不包含故事背景、docker的发展与应用…</p>
+<p>分享源于对问题 ‘我已经在　Dockerfile 中通过 EXPOSE 指定了端口为何任然无法访问？’ 深入探索。其实今天的分享也可以视为对上一期峰哥分享的一个补充。</p>
+<p>Docker容器的端口映射</p>
+<blockquote>
+<p>容器的服务端口绑定到宿主机的端口上。效果就是：外部程序通过宿主机的P端口访问，就像直接访问 Docker 容器网络内部容器提供的服务一样。</p>
+</blockquote>
+<p>今天的分享主要涉及到的 Docker run 命令，参数如下：</p>
+<ul>
+<li>-p&#x2F;-P</li>
+<li>–expose</li>
+</ul>
+<h3 id="expose"><a href="#expose" class="headerlink" title="expose"></a>expose</h3><p>expose 参数有两种使用形式：</p>
+<ul>
+<li>在 <code>docker run</code> 命令时指定 <code>--expose</code> 参数, 如 –expose&#x3D;8080</li>
+<li>在 Dockerfile 中，通过 <code>EXPOSE</code> 关键字</li>
+</ul>
+<h4 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h4><blockquote>
+<p><code>EXPOSE</code> 指令是声明运行时容器提供服务端口。</p>
+</blockquote>
+<p><strong>注意</strong>：</p>
+<p>仅仅是申明。并不是说你声明了这个端口，在运行容器的时候就会自动的暴露这个端口。使用时，还要依赖于容器的操作人员进一步指定网络规则。</p>
+<p>本质上来说， <code>EXPOSE</code> 或者 <code>--expose</code> 只是为其他命令提供所需信息的元数据，或者只是告诉容器操作人员有哪些已知选择。</p>
+<p>验证：　通过　<code>docker run nginx</code> 启动一个容器, 然后通过　｀docker inspect id&#96;　查看</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;HostConfig&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;PortBindings&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;443/tcp&quot;</span>: null,</span><br><span class="line">        <span class="string">&quot;80/tcp&quot;</span>: null</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>可以看到端口被标示成已暴露，但是没有定义任何与主机的端口映射。</p>
+<h4 id="p-x2F-P"><a href="#p-x2F-P" class="headerlink" title="-p&#x2F;-P"></a>-p&#x2F;-P</h4><p><code>-p</code> 与 <code>-P</code>　参数的完整形式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-p, --publish list </span><br><span class="line">-P, --publish-all </span><br></pre></td></tr></table></figure>
+
+<p>这两个参数都是发布端口到宿主主机。但用法上存在一点区别。</p>
+<p><code>-p</code> 显式将一个或者一组端口从容器里绑定到宿主机上。<br><code>-P</code> 自动的将EXPOSE指令相关的每个端口映射到宿主机的端口上。</p>
+<p>-p 参数常见的用法是: <code>-p 宿主主机端口:容器端口</code>。　如果使用　｀docker run -p 8080:80 nginx&#96; 命令启动nginx 容器，那么容器中的 80端口会绑定到主机的8080端口。</p>
+<p>这是，我们再通过　<code>docker inspect id</code> 来查看，将会看到下面的绑定关系:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;HostConfig&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;PortBindings&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;443/tcp&quot;</span>: null,</span><br><span class="line">        <span class="string">&quot;80/tcp&quot;</span>: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="string">&quot;HostIp&quot;</span>: <span class="string">&quot;0.0.0.0&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;HostPort&quot;</span>: <span class="string">&quot;8080&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                ]</span><br><span class="line"></span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>因为没有指定443端口的绑定，所以能看到仅有 80端口和宿主机存在端口映射关系。</p>
+<p>另外，在使用-p参数是，我们可以忽略指定宿主主机端口。这是，docker会帮助我们自动的选择一个合适端口和容器端口进行绑定。这样做的好处是在启动多个容器时可以避免端口冲突。</p>
+<p>例如上面的启动命令可以改为 <code>docker run -p 80 nginx</code>,　这时如果我们本机的80端口被占用，docker就会自动的选择一个其他端口。我们可以通过 <code>docker ps</code> 或 <code>docker inspect</code>　命令来查看端口的映射关系。</p>
+<p>-P 参数用法: <code>docker run -P nginx</code>.<br>-P 参数须配合　Dockerfile  一起使用，　能够将 Expose 声明的端口映射到宿主主机。</p>
+<p>此时，使用 <code>docker inspect </code>命令，可以看到 dockerfile 中申明的端口都已经绑定到了主机上。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;HostConfig&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;PortBindings&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;443/tcp&quot;</span>: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="string">&quot;HostIp&quot;</span>: <span class="string">&quot;0.0.0.0&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;HostPort&quot;</span>: <span class="string">&quot;443&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                ],</span><br><span class="line">        <span class="string">&quot;80/tcp&quot;</span>: [</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="string">&quot;HostIp&quot;</span>: <span class="string">&quot;0.0.0.0&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;HostPort&quot;</span>: <span class="string">&quot;80&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                ]</span><br><span class="line"></span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="expose-和-p-功能对比"><a href="#expose-和-p-功能对比" class="headerlink" title="-expose 和 -p 功能对比"></a>-expose 和 -p 功能对比</h4><p>我们可以通过如下的实验来更好的理解两参数之间的区别。</p>
+<ul>
+<li>不在 <code>Dockerfile</code> 里 <code>EXPOSE</code>，也不通过 <code>-p</code> 参数指定</li>
+<li>在 <code>Dockerfile</code> 里 <code>EXPOSE</code>，但不使用 <code>-p</code> 参数</li>
+<li>在 <code>Dockerfile</code> 里 <code>EXPOSE</code>，也使用 <code>-p</code> 参数</li>
+<li>在 <code>Dockerfile</code> 里 <code>EXPOSE</code>，也使用 <code>-P</code> 参数</li>
+<li>只使用 <code>-p</code> 参数</li>
+</ul>
+<p><strong>结果</strong></p>
+<ul>
+<li>第一中情况: 不能在外网访问，也不能被 link 的 container 访问</li>
+<li>第二种情况: 不能被外网访问，但是能被 link 的 container 访问</li>
+<li>第三种情况: 能被外网访问，也能被 link 容器访问iw</li>
+<li>第四种情况: 和第三种情况一样</li>
+<li>第五种情况: 和第三种情况一样</li>
+</ul>
+<h3 id="Docker-端口映射原理"><a href="#Docker-端口映射原理" class="headerlink" title="Docker 端口映射原理"></a>Docker 端口映射原理</h3><p><strong>备注：</strong> 这一块挺乱的，我也没弄得很清楚，权当抛砖引玉了。</p>
+<p>原本我理解端口映射是这样的一个通信过程：</p>
+<ul>
+<li>Docker进程启动的时候，会在宿主主机创建路由，同时创建docker0网桥</li>
+<li>容器启动的时候创建 vethxx　的网卡，同时链接到网桥</li>
+<li>通过 -p 参数指定端口映射后，　创建iptables规则</li>
+<li>当有流量通过宿主主机端口进来用，通过iptables 匹配到规则后，转换为容器对应的子网ip</li>
+<li>主机的路由指定了 172.xx　网段的ip由 docker0 处理</li>
+<li>docker0再将请求转发到子网中容器</li>
+</ul>
+<p>后面和朋友了解了，发现还有　docker-proxy 的存在，于是，上面的理解是其实就片面的，不完善的。</p>
+<hr>
+<p>到现在，关于 Docker 端口映射的实现一共有2方案.</p>
+<ul>
+<li>1.7版本之前 docker-proxy + iptables DNAT 的方式<br>即，内网访问通过 iptables<br>外网访问通过 proxy</li>
+<li>1.7版本之后的 iptables DNAT<br>完全由　iptables 实现</li>
+</ul>
+<p>Docker 1.7版本起，Docker提供了一个配置项： -userland-proxy，以让　Docker　用户决定是否启用　docker-proxy，默认为true，即启用docker-proxy。<br>现在的　Docker　环境默认的是： -userland-proxy&#x3D;true。iptables　和　docker-proxy　都会起作用。</p>
+<p><strong>-userland-proxy&#x3D;true的情况下</strong></p>
+<p>在启用 docker-proxy 的情况下。每设置一对端口映射就会启动一个 docker-proxy 进程。</p>
+<p>可以通过 ps 命令查看 docker-proxy　进程信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep docker-proxy</span><br><span class="line"></span><br><span class="line">root      5532 19713  0 2月20 ?       00:00:00 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 443 -container-ip 172.19.0.8 -container-port 443</span><br><span class="line">root      5546 19713  0 2月20 ?       00:00:01 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 80 -container-ip 172.19.0.8 -container-port 80</span><br></pre></td></tr></table></figure>
+
+<p>通过 sudo netstat -nltpu 查看本机的端口监听情况：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tcp6       0      0 :::80                   :::*                    LISTEN      5546/docker-proxy          </span><br><span class="line">tcp6       0      0 :::443                  :::*                    LISTEN      5532/docker-proxy</span><br></pre></td></tr></table></figure>
+
+<p>通过上面的命令，会发现，我们映射到宿主机的端口被　docker-proxy　进程监听了。</p>
+<p>别急，我们再看一下iptables，发现其中增加了对应的规则：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"> sudo iptables-save -t nat                 </span><br><span class="line"># Generated by iptables-save v1.6.1 on Fri Feb 22 15:06:17 2019</span><br><span class="line">*nat</span><br><span class="line">:PREROUTING ACCEPT [55751:14743102]</span><br><span class="line">:INPUT ACCEPT [55615:14734886]</span><br><span class="line">:OUTPUT ACCEPT [260072:22717364]</span><br><span class="line">:POSTROUTING ACCEPT [260200:22725044]</span><br><span class="line">:DOCKER - [0:0]</span><br><span class="line">-A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER</span><br><span class="line">-A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER</span><br><span class="line">-A POSTROUTING -s 172.20.0.0/16 ! -o br-bf4c59b26d33 -j MASQUERADE</span><br><span class="line">-A POSTROUTING -s 172.19.0.0/16 ! -o br-e2ab1d51063d -j MASQUERADE</span><br><span class="line">-A POSTROUTING -s 172.18.0.0/16 ! -o br-c9af812dc067 -j MASQUERADE</span><br><span class="line">-A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE</span><br><span class="line">-A POSTROUTING -s 172.19.0.2/32 -d 172.19.0.2/32 -p tcp -m tcp --dport 6379 -j MASQUERADE</span><br><span class="line">-A POSTROUTING -s 172.19.0.3/32 -d 172.19.0.3/32 -p tcp -m tcp --dport 27017 -j MASQUERADE</span><br><span class="line">-A POSTROUTING -s 172.19.0.5/32 -d 172.19.0.5/32 -p tcp -m tcp --dport 3306 -j MASQUERADE</span><br><span class="line">-A POSTROUTING -s 172.19.0.6/32 -d 172.19.0.6/32 -p tcp -m tcp --dport 9501 -j MASQUERADE</span><br><span class="line">-A POSTROUTING -s 172.19.0.6/32 -d 172.19.0.6/32 -p tcp sudo iptables -t filter -L</span><br><span class="line">Chain INPUT (policy ACCEPT)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line"></span><br><span class="line">Chain FORWARD (policy DROP)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">DOCKER-USER  all  --  anywhere             anywhere            </span><br><span class="line">DOCKER-ISOLATION-STAGE-1  all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED</span><br><span class="line">DOCKER     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED</span><br><span class="line">DOCKER     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED</span><br><span class="line">DOCKER     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED</span><br><span class="line">DOCKER     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line"></span><br><span class="line">Chain OUTPUT (policy ACCEPT)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line"></span><br><span class="line">Chain DOCKER (4 references)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.2           tcp dpt:6379</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.3           tcp dpt:27017</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.5           tcp dpt:mysql</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.6           tcp dpt:9501</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.6           tcp dpt:ssh</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.8           tcp dpt:https</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.8           tcp dpt:http</span><br><span class="line"></span><br><span class="line">Chain DOCKER-ISOLATION-STAGE-1 (1 references)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">DOCKER-ISOLATION-STAGE-2  all  --  anywhere             anywhere            </span><br><span class="line">DOCKER-ISOLATION-STAGE-2  all  --  anywhere             anywhere            </span><br><span class="line">DOCKER-ISOLATION-STAGE-2  all  --  anywhere             anywhere            </span><br><span class="line">DOCKER-ISOLATION-STAGE-2  all  --  anywhere             anywhere            </span><br><span class="line">RETURN     all  --  anywhere             anywhere            </span><br><span class="line"></span><br><span class="line">Chain DOCKER-ISOLATION-STAGE-2 (4 references)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">DROP       all  --  anywhere             anywhere            </span><br><span class="line">DROP       all  --  anywhere             anywhere            </span><br><span class="line">DROP       all  --  anywhere             anywhere            </span><br><span class="line">DROP       all  --  anywhere             anywhere            </span><br><span class="line">RETURN     all  --  anywhere             anywhere            </span><br><span class="line"></span><br><span class="line">Chain DOCKER-USER (1 references)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">RETURN     all  --  anywhere             anywhere -m tcp --dport 22 -j MASQUERADE</span><br><span class="line">-A POSTROUTING -s 172.19.0.8/32 -d 172.19.0.8/32 -p tcp -m tcp --dport 443 -j MASQUERADE</span><br><span class="line">-A POSTROUTING -s 172.19.0.8/32 -d 172.19.0.8/32 -p tcp -m tcp --dport 80 -j MASQUERADE</span><br><span class="line">-A DOCKER -i br-bf4c59b26d33 -j RETURN</span><br><span class="line">-A DOCKER -i br-e2ab1d51063d -j RETURN</span><br><span class="line">-A DOCKER -i br-c9af812dc067 -j RETURN</span><br><span class="line">-A DOCKER -i docker0 -j RETURN</span><br><span class="line">-A DOCKER ! -i br-e2ab1d51063d -p tcp -m tcp --dport 6379 -j DNAT --to-destination 172.19.0.2:6379</span><br><span class="line">-A DOCKER ! -i br-e2ab1d51063d -p tcp -m tcp --dport 27017 -j DNAT --to-destination 172.19.0.3:27017</span><br><span class="line">-A DOCKER ! -i br-e2ab1d51063d -p tcp -m tcp --dport 3306 -j DNAT --to-destination 172.19.0.5:3306</span><br><span class="line">-A DOCKER ! -i br-e2ab1d51063d -p tcp -m tcp --dport 9501 -j DNAT --to-destination 172.19.0.6:9501</span><br><span class="line">-A DOCKER ! -i br-e2ab1d51063d -p tcp -m tcp --dport 2222 -j DNAT --to-destination 172.19.0.6:22</span><br><span class="line">-A DOCKER ! -i br-e2ab1d51063d -p tcp -m tcp --dport 443 -j DNAT --to-destination 172.19.0.8:443</span><br><span class="line">-A DOCKER ! -i br-e2ab1d51063d -p tcp -m tcp --dport 80 -j DNAT --to-destination 172.19.0.8:80</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>DOCKER</code> 对应的是由 docker　自定义的一组过滤规则，可以通过　<code>sudo iptables -t filter -L</code>　查看到:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">sudo iptables -t filter -L</span><br><span class="line">Chain INPUT (policy ACCEPT)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line"></span><br><span class="line">Chain FORWARD (policy DROP)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">DOCKER-USER  all  --  anywhere             anywhere            </span><br><span class="line">DOCKER-ISOLATION-STAGE-1  all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED</span><br><span class="line">DOCKER     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED</span><br><span class="line">DOCKER     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED</span><br><span class="line">DOCKER     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED</span><br><span class="line">DOCKER     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line">ACCEPT     all  --  anywhere             anywhere            </span><br><span class="line"></span><br><span class="line">Chain OUTPUT (policy ACCEPT)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line"></span><br><span class="line">Chain DOCKER (4 references)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.2           tcp dpt:6379</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.3           tcp dpt:27017</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.5           tcp dpt:mysql</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.6           tcp dpt:9501</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.6           tcp dpt:ssh</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.8           tcp dpt:https</span><br><span class="line">ACCEPT     tcp  --  anywhere             172.19.0.8           tcp dpt:http</span><br><span class="line"></span><br><span class="line">Chain DOCKER-ISOLATION-STAGE-1 (1 references)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">DOCKER-ISOLATION-STAGE-2  all  --  anywhere             anywhere            </span><br><span class="line">DOCKER-ISOLATION-STAGE-2  all  --  anywhere             anywhere            </span><br><span class="line">DOCKER-ISOLATION-STAGE-2  all  --  anywhere             anywhere            </span><br><span class="line">DOCKER-ISOLATION-STAGE-2  all  --  anywhere             anywhere            </span><br><span class="line">RETURN     all  --  anywhere             anywhere            </span><br><span class="line"></span><br><span class="line">Chain DOCKER-ISOLATION-STAGE-2 (4 references)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">DROP       all  --  anywhere             anywhere            </span><br><span class="line">DROP       all  --  anywhere             anywhere            </span><br><span class="line">DROP       all  --  anywhere             anywhere            </span><br><span class="line">DROP       all  --  anywhere             anywhere            </span><br><span class="line">RETURN     all  --  anywhere             anywhere            </span><br><span class="line"></span><br><span class="line">Chain DOCKER-USER (1 references)</span><br><span class="line">target     prot opt source               destination         </span><br><span class="line">RETURN     all  --  anywhere             anywhere </span><br></pre></td></tr></table></figure>
+
+<p><strong>-userland-proxy&#x3D;false的情况下</strong></p>
+<p>待研究~</p>
+<p><strong>性能</strong></p>
+<p>docker-proxy 在网络上吐槽的比较多，因为每一对端口映射都会对一个 docker-proxy进程，如果端口较多，可能就会带来性能问题。且在单个 docker-proxy 的情况下，性能比 iptables 略差。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>－ –link 能够访问　expose 声明的端口</p>
+<ul>
+<li>-expose 仅声明端口，并不会自动映射到宿主主机</li>
+<li>-p 指定端口映射关系</li>
+<li>-P 将 expose 声明的端口发布到宿主主机</li>
+<li>在处理端口映射是，iptables　规则优先，如果没有匹配到iptables规则，则由 docker-proxy处理</li>
+</ul>
+<p><strong>待深入研究的问题：</strong></p>
+<ul>
+<li>container &lt;-&gt; container、host &lt;-&gt; container、 container &lt;-&gt; host　各自怎么选择策略的</li>
+<li>iptables 规则</li>
+</ul>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2022
+
+            <span>吹雨听风.</span>
+            
+            <span>
+                Powered by <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+               
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)" target="_blank" rel="noopener">Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+    </div>
+</div>
+
+</body>
+</html>

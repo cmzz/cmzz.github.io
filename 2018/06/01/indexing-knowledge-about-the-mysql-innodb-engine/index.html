@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="吹雨听风独立博客">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        关于 MySQL InnoDB 引擎的索引知识 - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        关于 MySQL InnoDB 引擎的索引知识
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Fri Jun 01 2018 00:00:00 GMT+0000">2018-06-01</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+            <div class="mt-2">
+                <span>Tags：</span>
+                
+                    <a class="" href="/tags/#技术"
+                       title="技术">技术</a>
+                    
+                        <span>,</span>
+                    
+                
+                    <a class="" href="/tags/#MySQL"
+                       title="MySQL">MySQL</a>
+                    
+                
+            </div>
+        
+    </div>
+
+    <section class="pt-10 ">
+        <p>这边文章在草稿箱放了整整１年半啊.</p>
+<h2 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h2><p>从 MySQL 5.5.5 版本开始 InnoDB 是 Mysql 的默认存储引擎。</p>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><h3 id="支持的索引"><a href="#支持的索引" class="headerlink" title="支持的索引"></a>支持的索引</h3><ul>
+<li>支持全文索引</li>
+<li>支持 B+ 树索引</li>
+<li>支持 hash 索引</li>
+</ul>
+<p>其中 hash 索引是完全自动的，不能人工干预，InnoDB 引擎会监控表上各个索引页的查询，如果观察到建立 hash 索引可以带来速度提升，则自动建立 hash 索引</p>
+<p><strong>B+ 树索引</strong><br>就是我们所说的索引。<br>B+ 树索引不能直接找到具体数据的行，只能找到数据所在的页，数据库通过把也度入到内存，在内存中查找，最后得到数据。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><h4 id="树"><a href="#树" class="headerlink" title="树"></a>树</h4><p>二叉树：每个节点有两个子节点，数据量的增大必然导致高度的快速增加。<br>搜索二叉树：左子树小于根，右子树大于根。<br>平衡二叉树：2 棵子树的高度差为 1（查找效率共，但维护成本也高）。<br>B树：是一种自平衡的树。概括来说是一个一般化的二叉查找树，可以拥有多于 2 个子节点（也是 MyISAM  参考的数据结构，ISAM：索引顺序存取方法）。</p>
+<p>B+ 树： 通过二叉查找树，再由平衡二叉树，B 树演化来的。因此，B+ 树也是一种平衡树。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006CUA5Vgy1fzme91elfej30m80a8q4h.jpg"></p>
+<p>⤴️ 高度为2 每页可存放3条记录的B+树。</p>
+<p>B+ 树元素自底向上插入。所有记录节点都是按键值的大小顺序存放在同一层叶子节点上，由各叶子节点指针进行连接。</p>
+<h4 id="B-树的插入操作"><a href="#B-树的插入操作" class="headerlink" title="B+ 树的插入操作"></a>B+ 树的插入操作</h4><p>节点未满：直接插入。</p>
+<p>节点已满：这时候需要分裂。当一个结点满时，分配一个新的结点，并将原结点中 1&#x2F;2 的数据复制到新结点，最后在父结点中增加新结点的指针；B+ 树的分裂只影响原结点和父结点，而不会影响兄弟结点，所以它不需要指向兄弟节点的指针</p>
+<h4 id="B-树的删除操作"><a href="#B-树的删除操作" class="headerlink" title="B+ 树的删除操作"></a>B+ 树的删除操作</h4><p>直接删除：如果不是 Page Index 节点，则直接删除。<br>删除 Page Index 节点： 直接删除，使用右边的节点作为 Page Index， 同事更新父节点。<br>合并：删除后，节点数量小于 50%，则和兄弟节点合并。同时更新父节点。</p>
+<h4 id="B-树的查找"><a href="#B-树的查找" class="headerlink" title="B+ 树的查找"></a>B+ 树的查找</h4><p><img src="https://ws1.sinaimg.cn/large/006CUA5Vgy1fzmearrmt8j30fi04vwet.jpg" alt="B+ 树的查找示意图"></p>
+<p>通常向下读取一个节点的动作可能会是一次磁盘IO操作，不过非叶节点通常会在初始阶段载入内存以加快访问速度。同时为提高在节点间横向遍历速度，真实数据库中可能会将图中蓝色的CPU计算&#x2F;内存读取优化成二叉搜索树。</p>
+<h3 id="InnoDB-的索引"><a href="#InnoDB-的索引" class="headerlink" title="InnoDB 的索引"></a>InnoDB 的索引</h3><h4 id="聚集索引"><a href="#聚集索引" class="headerlink" title="聚集索引"></a>聚集索引</h4><p>InnoDB使用的是聚集索引，就是按照每张表的主键构建一颗B+树，叶子节点中存放的整张表的行记录数据（数据页）。各数据页之间使用双向链表连接。</p>
+<p>聚集索引即是主键。<br>每张表只能有用一个聚集索引。<br>数据在逻辑上是顺序的，物理上不是顺序存储的。<br>聚集索引的排序、查找、范围查找非常快。</p>
+<h4 id="辅助索引"><a href="#辅助索引" class="headerlink" title="辅助索引"></a>辅助索引</h4><p>也称非聚集索引。叶子节点不包含行记录的全部数据。叶子节点除了包含键值以外，还包含一个数钱，用来告诉引擎在哪里找到数据（指向到聚集索引）。<br>辅助索引不影响数据在聚集索引中的组织，因此，一张表可以包含多个辅助索引。</p>
+<p>假设辅助索引树高3层，聚集索引树为3层。辅助索引 B+ 树中检索 name，需要先经过3次 IO 到达其叶子节点获取对应的主键。接着再经过3次 IO 使用主键在聚集索引 B+ 树中再执行一次 B+ 树检索操作，最终到达叶子节点即可获取整行数据。</p>
+<p>聚簇索引的优势:</p>
+<ul>
+<li>行数据和叶子节点存储在一起，这样主键和行数据是一起被载入内存的，找到叶子节点就可以立刻将行数据返回。</li>
+<li>保证不管这个主键B+树的节点如何变化，辅助索引树都不受影响。</li>
+</ul>
+<h2 id="正确建立索引"><a href="#正确建立索引" class="headerlink" title="正确建立索引"></a>正确建立索引</h2><ul>
+<li><p>最左前缀匹配</p>
+</li>
+<li><p>&#x3D; 和 in 可以乱序， MySQL 的查询优化器会帮你优化成索引可以识别的形式</p>
+</li>
+<li><p>尽量选择区分度高的列作为索引（Cardinality 值），区分度的公式是  <code>count(distinct col)/count(*)</code> ，表示字段不重复的比例，比例越大我们扫描的记录数越少，唯一键的区分度是1</p>
+<ul>
+<li><code>show index from user</code> 可查看 Cardinality 值（采样统计，非实时）</li>
+<li><img src="https://ws1.sinaimg.cn/large/006CUA5Vgy1fzme9yvis3j31lg09mq58.jpg" alt="Cardinality 值"></li>
+</ul>
+</li>
+<li><p>索引列不能参与计算</p>
+</li>
+<li><p>尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可。</p>
+</li>
+</ul>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2022
+
+            <span>吹雨听风.</span>
+            
+            <span>
+                Powered by <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+               
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)" target="_blank" rel="noopener">Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+    </div>
+</div>
+
+</body>
+</html>
