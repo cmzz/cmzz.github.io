@@ -2,24 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://www.wewx.cn/about/index.html</loc>
-    
-    <lastmod>2022-04-21</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/tags/index.html</loc>
-    
-    <lastmod>2022-04-21</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.wewx.cn/2018/08/24/docker-expose-publish/</loc>
     
     <lastmod>2022-04-21</lastmod>
@@ -93,6 +75,24 @@
   
   <url>
     <loc>https://www.wewx.cn/2018/07/20/docker-network-port-mapping/</loc>
+    
+    <lastmod>2022-04-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/about/index.html</loc>
+    
+    <lastmod>2022-04-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/tags/index.html</loc>
     
     <lastmod>2022-04-21</lastmod>
     
