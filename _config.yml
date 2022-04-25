@@ -9,7 +9,7 @@ description: 吹雨听风独立博客
 keywords: 吹雨听风,吹雨听风独立博客,PHP,Go,支付系统,系统架构,PMP
 author: 吹雨听风
 language: zh
-timezone: Asia/shanghai
+timezone: Asia/Shanghai
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
