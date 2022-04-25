@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.wewx.cn/2018/08/24/docker-expose-publish.html</loc>
-    <lastmod>2022-04-25</lastmod>
-  </url>
-  <url>
     <loc>https://www.wewx.cn/2017/04/10/explor-https.html</loc>
     <lastmod>2022-04-25</lastmod>
   </url>
@@ -46,6 +42,10 @@
   </url>
   <url>
     <loc>https://www.wewx.cn/2018/07/20/docker-network-port-mapping.html</loc>
+    <lastmod>2022-04-25</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2018/08/24/docker-expose-publish.html</loc>
     <lastmod>2022-04-25</lastmod>
   </url>
 </urlset> 
