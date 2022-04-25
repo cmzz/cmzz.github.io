@@ -15,7 +15,7 @@ https://www.wewx.cn/links/index.html
 https://www.wewx.cn/tags/index.html
 https://www.wewx.cn/
 https://www.wewx.cn/tags/%E6%8A%80%E6%9C%AF/
-https://www.wewx.cn/tags/docker/
+https://www.wewx.cn/tags/Docker/
 https://www.wewx.cn/tags/HTTPS/
 https://www.wewx.cn/tags/%E7%BD%91%E7%BB%9C/
 https://www.wewx.cn/tags/%E5%AE%B9%E5%99%A8/
@@ -24,4 +24,3 @@ https://www.wewx.cn/tags/Linux/
 https://www.wewx.cn/tags/%E5%AD%98%E5%82%A8/
 https://www.wewx.cn/tags/%E5%88%9B%E4%B8%9A/
 https://www.wewx.cn/tags/%E6%84%9F%E6%83%B3/
-https://www.wewx.cn/tags/Docker/
