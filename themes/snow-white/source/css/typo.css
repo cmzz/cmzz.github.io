@@ -151,6 +151,10 @@ html {
   .typo a {
     border-bottom: 1px solid #1abc9c;
   }
+
+  .typo a {
+    word-wrap:break-word;
+  }
   
   .typo a:hover {
     border-bottom-color: #555;
