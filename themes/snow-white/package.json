@@ -1,0 +1,9 @@
+{
+  "name": "hexo-theme-snow-white",
+  "version": "1.0.0",
+  "private": false,
+  "scripts": {
+    "build": "npx tailwindcss -i ./source/css/_tailwind.css -o ./source/css/tailwind.css",
+    "dev": "npx tailwindcss -i ./source/css/_tailwind.css -o ./source/css/tailwind.css --watch"
+  }
+}
