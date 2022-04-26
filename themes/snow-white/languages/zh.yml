@@ -5,6 +5,7 @@ nav:
   about: 关于
   collect: 收藏
   search: 搜索
+  links: 链接
 
 post:
   postTime: 发布于
@@ -28,3 +29,5 @@ footer:
   uv: 访客数
   pv: 访问量
   license: 署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)
+  sitemap: 网站地图
+  rss: RSS

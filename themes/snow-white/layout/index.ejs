@@ -4,7 +4,7 @@ layout: layout
 
 <section class="max-w-4xl mx-auto py-10">
     <div class="post-preview-container space-y-5">
-        <% page.posts.each(function(post){ %>
+        <% page.posts.filter(function (post) {if (!post.hideInList) { return post;}}).each(function(post){ %>
             <div class="post-preview">
                 <div class="md:flex md:flex-row">
                     <div class="hidden md:block md:basis-1/4">

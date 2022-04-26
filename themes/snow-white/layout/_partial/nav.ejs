@@ -18,4 +18,9 @@
         <a href="<%= url_for(config.about) %><%- 'about/' %>"
            class="whitespace-nowrap text-gray-500 <% if(is_current('about')){ %> <%- "active" %> <% } %>"> <%= __('nav.about') %> </a>
     <% } %>
+
+    <% if (theme.nav.showLinks) { %>
+        <a href="<%= url_for(config.home_dir) %><%- 'links/' %>"
+           class="whitespace-nowrap text-gray-500 <% if(is_current('links')){ %> <%- "active" %> <% } %>"> <%= __('nav.links') %> </a>
+    <% } %>
 </div>

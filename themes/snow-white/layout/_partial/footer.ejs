@@ -9,7 +9,7 @@
             <%= current %>
 
             <span><%= config.author %>.</span>
-            
+
             <span>
                 <%= __('footer.powered_prefix') %> <a class="hexo-link " href="https://hexo.io/">Hexo</a> and
                 <a href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
@@ -20,21 +20,21 @@
         </div>
 
         <div class="flex sm:flex-initial items-center">
-            <% if (theme.icp) { %>
+            <% if (theme.icp && theme.footer.showIcp) { %>
                 <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
                 <span>
                     <%- link_to('https://beian.miit.gov.cn', theme.icp, {external: true}) %>
                 </span>
             <% } %>
 
-            <% if (theme.ga) { %>
+            <% if (theme.ga && theme.footer.showGaIcp) { %>
                 <span class="inline-block px-2 text-xs text-gray-400">|</span>
                 <span>
                     <%- link_to('http://www.beian.gov.cn/portal/registerSystemInfo', theme.ga, {external: true}) %>
                 </span>
             <% } %>
 
-            <% if (theme.view_count) { %>
+            <% if (theme.busuanzi_analytics && theme.footer.showViewCount) { %>
                 <span class="inline-block px-2 text-xs text-gray-400">|</span>
                 <span id="busuanzi_container_site_uv">
                     <%= __('footer.uv') %>: <span id="busuanzi_value_site_uv"></span>
@@ -43,7 +43,29 @@
                 <span id="busuanzi_container_site_pv">
                     <%= __('footer.pv') %>: <span id="busuanzi_value_site_pv"></span>
                 </span>
-            <% } %>   
+            <% } %>
+
+            <% if (theme.footer.showLinks) { %>
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="<%= url_for(config.home_dir) %><%- 'links' %>"
+                       class="whitespace-nowrap text-gray-500 <% if(is_current('links')){ %> <%- "active" %> <% } %>"> <%= __('nav.links') %> </a>
+                </span>
+            <% } %>
+
+            <% if (theme.rss && theme.footer.showRss) { %>
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <%- link_to(theme.rss, __('footer.rss'), {external: true}) %>
+                </span>
+            <% } %>
+
+            <% if (theme.sitemap && theme.footer.showSitemap) { %>
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <%- link_to(theme.sitemap, __('footer.sitemap'), {external: true}) %>
+                </span>
+            <% } %>
         </div>
     </div>
 
@@ -51,3 +73,7 @@
         <%- link_to('https://creativecommons.org/licenses/by-nc/4.0/deed.zh', __('footer.license'), {external: true}) %>
     </div>
 </footer>
+
+<%- partial('_partial/analytics/busuanzi_analytics') %>
+<%- partial('_partial/analytics/baidu_analytics') %>
+<%- partial('_partial/analytics/google_analytics') %>

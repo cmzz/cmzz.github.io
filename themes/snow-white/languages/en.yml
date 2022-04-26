@@ -5,6 +5,7 @@ nav:
   about: About
   collect: Collect
   search: Search
+  links: Links
 
 post:
   postTime: Post
@@ -28,3 +29,5 @@ footer:
   uv: Unique visitors
   pv: Total page views
   license: Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
+  sitemap: Site Map
+  rss: RSS

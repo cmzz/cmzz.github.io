@@ -1,6 +1,4 @@
-__: snow-white
-
-since:
+since: 2018
 # icp 备案号
 icp:
 # 公安备案号
@@ -21,7 +19,7 @@ footer:
   showGaIcp: false
   # 显示统计
   showBusuanziViewCount: false
-  showRss: true
+  showRss: false
   showSitemap: fale
 
 post:
@@ -31,6 +29,6 @@ post:
 baidu_analytics:
 # google 统计
 google_analytics:
-busuanzi_analytics: false
+busuanzi_enable: false
 rss: /atom.xml
 sitemap: /sitemap.xml

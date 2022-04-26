@@ -15,12 +15,7 @@ layout: layout
                     <time datetime="<%= page.date %>"><%- page.date.format(config.date_format) %></time>
                 </span>
 
-            <% if(theme.post.showVisit) { %>
-                <span class="px-3 text-gray-300">|</span>
-                <span id="busuanzi_container_page_pv">
-                    <%= __('post.visit') %> <span id="busuanzi_value_page_pv"></span> <%= __('post.visit_postfix') %>
-                </span>
-            <% } %>
+            <%- partial('_partial/post/busuanzi_analytics') %>
 
             <% if(page.external) { %>
                 <span class="px-3 text-gray-300">|</span>
@@ -28,18 +23,7 @@ layout: layout
             <% } %>
         </div>
 
-        <% if (page.tags.length){ %>
-            <div class="mt-2">
-                <span><%= __('post.tags') %>：</span>
-                <% page.tags.forEach(function(tag, i){ %>
-                    <a class="" href="<%= config.root %>tags/#<%= tag.name %>"
-                       title="<%= tag.name %>"><%= tag.name %></a>
-                    <% if (i < page.tags.length - 1) { %>
-                        <span>,</span>
-                    <% } %>
-                <% }) %>
-            </div>
-        <% } %>
+        <%- partial('_partial/post/tags') %>
     </div>
 
     <section class="pt-10 <% if(config.post_style && !config.post_style.indent) { %>no-indent<% } %>">

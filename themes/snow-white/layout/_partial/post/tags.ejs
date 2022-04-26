@@ -1,0 +1,12 @@
+<% if (page.tags.length){ %>
+    <div class="mt-2">
+        <span><%= __('post.tags') %>：</span>
+        <% page.tags.forEach(function(tag, i){ %>
+            <a class="" href="<%= config.root %>tags/#<%= tag.name %>"
+               title="<%= tag.name %>"><%= tag.name %></a>
+            <% if (i < page.tags.length - 1) { %>
+                <span>,</span>
+            <% } %>
+        <% }) %>
+    </div>
+<% } %>
