@@ -54,6 +54,8 @@
     
 
     
+
+    
 </div>
             </div>
         </div>
@@ -82,21 +84,21 @@
         </div>
 
         
-            <div class="mt-2">
-                <span>标签：</span>
-                
-                    <a class="" href="/tags/#技术"
-                       title="技术">技术</a>
-                    
-                        <span>,</span>
-                    
-                
-                    <a class="" href="/tags/#存储"
-                       title="存储">存储</a>
-                    
-                
-            </div>
+    <div class="mt-2">
+        <span>标签：</span>
         
+            <a class="" href="/tags/#技术"
+               title="技术">技术</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#存储"
+               title="存储">存储</a>
+            
+        
+    </div>
+
     </div>
 
     <section class="pt-10 ">
@@ -113,7 +115,7 @@
 <p>上面列举的文件属性都是从文件本身和使用方面考虑的，属性的不同决定着必须采取不同的方式来对待：</p>
 <h4 id="文件内容的敏感程度"><a href="#文件内容的敏感程度" class="headerlink" title="文件内容的敏感程度"></a>文件内容的敏感程度</h4><p>什么是内容的敏感程度？敏感数据主要包括个人隐私信息、密码&#x2F;密钥、敏感图片等高价值数据。用大白话来说就是上传的这个文件，在上传者匿名的情况下，文件的内容会不会暴露上传者或其他人&#x2F;事物&#x2F;公司的敏感信息。例如，在金融或支付之类的系统中，文件中包含银行卡号码、电话号码、用户身份证号码，或是企业的合同等等，包含这类信息的文件就可以说是敏感文件。反之像是用户随手发到博客的图片，即使被人无意中看到也没关系，这就不敏感。</p>
 <p>在我们设计文件服务服务的时候，如果需要存储敏感文件，那么就要充分的考虑文件内容的保密性。可以采取的常见措施为：</p>
-<p>** 敏感数据识别**：接接收到用户上传的数据时，能够有相应的算法实别到该文件属于较为敏感的数据，以便在存储时加以区别对待。</p>
+<p><strong>敏感数据识别</strong>：接接收到用户上传的数据时，能够有相应的算法实别到该文件属于较为敏感的数据，以便在存储时加以区别对待。</p>
 <p><strong>分块存储</strong>：即将文件切为很多个块。放在不同的地方，即使得到一块也无法还原文件内容。</p>
 <p><strong>加密存储</strong>：在文件写入到磁盘保存之前，对文件字节进行加密。如果当年冠希哥懂点安全的话，那观众就少了一个大瓜。</p>
 <p><strong>混淆存储</strong>：保存文件的时候，用一定的规则将文件内容打乱重排，窃取或看到的人也就看不懂了，从而起到保护文件中机密的作用</p>
@@ -151,7 +153,7 @@
             2022
 
             <span>吹雨听风.</span>
-            
+
             <span>
                 本站由 <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
                 <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
@@ -166,7 +168,24 @@
 
             
 
-               
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/links"
+                       class="whitespace-nowrap text-gray-500 "> 链接 </a>
+                </span>
+            
+
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/sitemap.xml" title="网站地图" target="_blank" rel="noopener">网站地图</a>
+                </span>
+            
         </div>
     </div>
 
@@ -174,6 +193,9 @@
         <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)" target="_blank" rel="noopener">署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>
     </div>
 </footer>
+
+
+
 
     </div>
 </div>
