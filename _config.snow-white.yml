@@ -19,8 +19,8 @@ footer:
   showGaIcp: false
   # 显示统计
   showBusuanziViewCount: false
-  showRss: false
-  showSitemap: fale
+  showRss: true
+  showSitemap: true
 
 post:
   showBusuanziViewCount: false
