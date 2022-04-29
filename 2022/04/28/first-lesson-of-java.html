@@ -130,11 +130,13 @@
 <li><code>JRE_HOME</code> 同样，这也是一个约定的变量，通常指JRE目录。其实大部分Java程序不需要JDK，而是只需要其子集JRE，所以很多程序也会去取这个变量来用。</li>
 </ul>
 <p>在程序中，也可以通过 Java 提供的 API 来获取：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">find <span class="type">String</span> <span class="variable">env</span> <span class="operator">=</span> System.getenv(<span class="string">&quot;PATH&quot;</span>);</span><br><span class="line">System.out.println(env);</span><br></pre></td></tr></table></figure>
-
+<pre><code>find String env = System.getenv(&quot;PATH&quot;);
+System.out.println(env);
+</code></pre>
 <p>因此，我们可以将设置版本以及选设置环境变量放在 <code>~/.bash_profile</code> 或 <code>~/.zshrc</code> 文件中：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=`/usr/libexec/java_home -v 1.8.0_331`</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$&#123;JAVA_HOME&#125;</span>/bin:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
-
+<pre><code>export JAVA_HOME=/usr/libexec/java_home -v 1.8.0_331
+export PATH=$&#123;JAVA_HOME&#125;/bin:$PATH
+</code></pre>
 <p>##后缀<br>在 Java 程序中，有几种不同类型的文件后缀名，对应到程序的源码、编译等不同的阶段。</p>
 <ul>
 <li><code>.java</code> 是 Java 程序的源代码</li>
