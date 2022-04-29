@@ -22,11 +22,11 @@ Java 是个有20多年历史的编程语言，语言的生态和应用场景极�
 ![jre与jdk对比图](https://tva1.sinaimg.cn/large/e6c9d24egy1h1r10a12o9j20fk0b2t9r.jpg)
 
 
-除了，上面之后，还有一堆的令人困惑版本号：Java 1.x Java 1x。
+除了上面的，还有一堆的令人困惑版本号：Java 1.x Java 1x。
 
-> 首先1996年发布了最初版本Java1.0，此后为Java1.1、J2SE1.2、J2SE1.3、J2SE1.4、采用 1.X的命名方式，直到2004年的JavaOne会议后版本数提升为5.0，这一新版本为Java SE5.0（或J2SE5.0，此处存在疑问，网上使用较多为Java SE5），在2006年Sun公司终结了已经有8年历史的J2SE、J2EE、J2ME的命名方式启用了今天的 Java SE、Java EE、Java ME  命名方式，而此后的版本为Java SE6、Java SE7、Java SE8、Java SE9、Java SE10、Java SE11、Java SE12、JAVA SE18
+> 首先1996年发布了最初版本Java1.0，此后为Java1.1、J2SE1.2、J2SE1.3、J2SE1.4、采用 1.X的命名方式，直到 2004 年的 JavaOne 会议后版本数提升为 5.0，这一新版本为Java SE5.0，在 2006 年 Sun 公司终结了已经有 8 年历史的 J2SE、J2EE、J2ME 的命名方式启用了今天的 Java SE、Java EE、Java ME  命名方式，而此后的版本为 Java SE6、Java SE7、Java SE8、Java SE9、Java SE10、Java SE11、Java SE12、JAVA SE18
 
-> 而JDK则在 Java1.0 到 Java9 对应每一个版本号 ：JDK1.0、JDK1.2 ... JDK1.8、JDK1.9，Java10以后JDK对应名称为：JDk10、JDK11、JDK12、JDK18
+> 而JDK则在 Java1.0 到 Java9 对应每一个版本号 ：JDK1.0、JDK1.2 ... JDK1.8、JDK1.9，Java10 以后JDK对应名称为：JDk10、JDK11、JDK12、JDK18
 
 所以
 - `Java 8` 指 Java SE 8.0 的版本
@@ -48,13 +48,18 @@ Java现在的最新版本是 Java 18，但在市场上最受欢迎的以及最�
 - `JRE_HOME` 同样，这也是一个约定的变量，通常指JRE目录。其实大部分Java程序不需要JDK，而是只需要其子集JRE，所以很多程序也会去取这个变量来用。
 
 在程序中，也可以通过 Java 提供的 API 来获取：
+
+```java
 find String env = System.getenv("PATH");
 System.out.println(env);
+```
 
 因此，我们可以将设置版本以及选设置环境变量放在 `~/.bash_profile` 或 `~/.zshrc` 文件中：
 
+```bash
 export JAVA_HOME=`/usr/libexec/java_home -v 1.8.0_331`
 export PATH=${JAVA_HOME}/bin:$PATH
+```
 
 ##后缀
 在 Java 程序中，有几种不同类型的文件后缀名，对应到程序的源码、编译等不同的阶段。
