@@ -49,17 +49,17 @@ Java现在的最新版本是 Java 18，但在市场上最受欢迎的以及最�
 
 在程序中，也可以通过 Java 提供的 API 来获取：
 
-```java
-find String env = System.getenv("PATH");
-System.out.println(env);
-```
+
+    find String env = System.getenv("PATH");
+    System.out.println(env);
+
 
 因此，我们可以将设置版本以及选设置环境变量放在 `~/.bash_profile` 或 `~/.zshrc` 文件中：
 
-```bash
-export JAVA_HOME=`/usr/libexec/java_home -v 1.8.0_331`
-export PATH=${JAVA_HOME}/bin:$PATH
-```
+
+    export JAVA_HOME=/usr/libexec/java_home -v 1.8.0_331
+    export PATH=${JAVA_HOME}/bin:$PATH
+
 
 ##后缀
 在 Java 程序中，有几种不同类型的文件后缀名，对应到程序的源码、编译等不同的阶段。
