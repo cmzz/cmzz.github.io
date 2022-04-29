@@ -61,14 +61,14 @@ export JAVA_HOME=/usr/libexec/java_home -v 1.8.0_331
 export PATH=${JAVA_HOME}/bin:$PATH
 ```
 
-##后缀
+## 后缀
 在 Java 程序中，有几种不同类型的文件后缀名，对应到程序的源码、编译等不同的阶段。
 
 - `.java` 是 Java 程序的源代码
 - `.class` 是 .java 源代码编译的的字节码文件，真正可以被 jvm 执行
 - `.jar` 将一组 .class 文件打包而来，本质是一个 zip 格式的压缩文件
 
-##Maven
+## Maven
 Apache Maven，是一个软件（特别是Java软件）项目管理及自动构建工具，由Apache软件基金会所提供。
 
 Maven项目使用项目对象模型（Project Object Model，POM）来配置。
