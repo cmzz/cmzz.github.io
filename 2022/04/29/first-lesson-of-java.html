@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="吹雨听风独立博客">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Fri Apr 29 2022 16:49:05 GMT+0000">2022-04-29</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+    </div>
+
+    <section class="pt-10 ">
+        <h1 id="这回是个-Java-小白"><a href="#这回是个-Java-小白" class="headerlink" title="这回是个 Java 小白"></a>这回是个 Java 小白</h1><p>Java 是个有20多年历史的编程语言，语言的生态和应用场景极其完善。尤其是在企业环境中有着非常官方的应用。</p>
+<p>此前一直没有使用过 Java，对 java 并不是很，而现在马上需要给客户交付 Java 语言的支付 SDK，临时来报佛脚，边看边学边写SDK，过程着顺便做一些记录。</p>
+<h2 id="名词"><a href="#名词" class="headerlink" title="名词"></a>名词</h2><p>不过对于新手来说，首选面对的就是能排一长排的以 Java 为开头命名的名语，让人很是困惑：</p>
+<ul>
+<li><code>Java EE</code> Enterprise Edition。这个版本以前称为 J2EE。企业版本帮助开发和部署可移植、健壮、可伸缩且安全的服务器端 Java 应用程序。Java EE 是在 Java SE 的基础上构建的，它提供 Web 服务、组件模型、管理和通信 API，可以用来实现企业级的面向服务体系结构（service-oriented architecture，SOA）和 Web 2.0 应用程序。</li>
+<li><code>Java SE</code> Standard Edition。它允许开发和部署在桌面、服务器、嵌入式环境和实时环境中使用的 Java 应用程序。Java SE 包含了支持 Java Web 服务开发的类，并为 Java Platform，Enterprise Edition（Java EE）提供基础。</li>
+<li><code>Java ME</code> Micro Edition。Java ME 为在移动设备和嵌入式设备（比如手机、PDA、电视机顶盒和打印机）上运行的应用程序提供一个健壮且灵活的环境。Java ME 包括灵活的用户界面、健壮的安全模型、许多内置的网络协议以及对可以动态下载的连网和离线应用程序的丰富支持。基于 Java ME 规范的应用程序只需编写一次，就可以用于许多设备，而且可以利用每个设备的本机功能。</li>
+<li><code>jre</code> 是Java的运行环境。面向Java程序的使用者，而不是开发者 。如果你仅下载并安装了JRE，那么你的系统只能运行Java程序。JRE是运行Java程序所必须环境的集合，包含JVM标准实现及Java核心类库。它包括Java虚拟机、Java平台核心类和支持文件。 它不包含开发工具(编译器、调试器等)。</li>
+<li><code>jdk</code> JDK(Java Development Kit)又称J2SDK(Java2 Software Development Kit)，是Java开发工具包， 它提供了Java的开发环境(提供了编译器javac等工具，用于将java文件编译为class文件)和运行环境(提供了JVM和Runtime辅助包，用于解析class文件使其得到运行)。如果你下载并安装了JDK，那么你不仅可以开发Java程序，也同时拥有了运行Java程序的平台。 JDK是整个Java的核心，包括了Java运行环境(JRE)，一堆Java工具tools.jar和Java标准类库 (rt.jar)。</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1r10a12o9j20fk0b2t9r.jpg" alt="jre与jdk对比图"></p>
+<p>除了，上面之后，还有一堆的令人困惑版本号：Java 1.x Java 1x。</p>
+<blockquote>
+<p>首先1996年发布了最初版本Java1.0，此后为Java1.1、J2SE1.2、J2SE1.3、J2SE1.4、采用 1.X的命名方式，直到2004年的JavaOne会议后版本数提升为5.0，这一新版本为Java SE5.0（或J2SE5.0，此处存在疑问，网上使用较多为Java SE5），在2006年Sun公司终结了已经有8年历史的J2SE、J2EE、J2ME的命名方式启用了今天的 Java SE、Java EE、Java ME  命名方式，而此后的版本为Java SE6、Java SE7、Java SE8、Java SE9、Java SE10、Java SE11、Java SE12、JAVA SE18</p>
+</blockquote>
+<blockquote>
+<p>而JDK则在 Java1.0 到 Java9 对应每一个版本号 ：JDK1.0、JDK1.2 … JDK1.8、JDK1.9，Java10以后JDK对应名称为：JDk10、JDK11、JDK12、JDK18</p>
+</blockquote>
+<p>所以</p>
+<ul>
+<li><code>Java 8</code> 指 Java SE 8.0 的版本</li>
+<li><code>Java 18</code> 指 Java SE 18 的版本 </li>
+<li><code>JDK 1.8</code> 则指 Java 8 对应的 JDK 版本</li>
+</ul>
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><p>Java现在的最新版本是 Java 18，但在市场上最受欢迎的以及最为普遍的不是  <code>Java 8</code>，这又带来了环境与版本的问题。</p>
+<p>但好在安装 Java 之后提供一个工具来管理当前系统上的java版本。命令是 <code>/usr/libexec/java_home</code> 。</p>
+<p>在终端运行 <code>/usr/libexec/java_home -V</code> 可以看到系统中安装的所有版本的 Java  程序，并可以切换到对应的版本： <code>/usr/libexec/java_home -v &lt;version&gt;</code></p>
+<p>如：<code>/usr/libexec/java_home -v 1.8</code>，可以切换到 JDK 1.8。之后可通过 <code>java -version</code> 来查看当前的版本。</p>
+<h2 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h2><p>在 java 中有几个重要的环境变量需要在安装完 Java 之后进行配置：</p>
+<ul>
+<li><code>JAVA_HOME</code> 通常它指的是JDK的目录。如果需要JDK的话，大部分程序会默认去环境变量中取JAVA_HOME这个变量。</li>
+<li><code>JRE_HOME</code> 同样，这也是一个约定的变量，通常指JRE目录。其实大部分Java程序不需要JDK，而是只需要其子集JRE，所以很多程序也会去取这个变量来用。</li>
+</ul>
+<p>在程序中，也可以通过 Java 提供的 API 来获取：<br>find String env &#x3D; System.getenv(“PATH”);<br>System.out.println(env);</p>
+<p>因此，我们可以将设置版本以及选设置环境变量放在 <code>~/.bash_profile</code> 或 <code>~/.zshrc</code> 文件中：</p>
+<p>export JAVA_HOME&#x3D;<code>/usr/libexec/java_home -v 1.8.0_331</code><br>export PATH&#x3D;${JAVA_HOME}&#x2F;bin:$PATH</p>
+<p>##后缀<br>在 Java 程序中，有几种不同类型的文件后缀名，对应到程序的源码、编译等不同的阶段。</p>
+<ul>
+<li><code>.java</code> 是 Java 程序的源代码</li>
+<li><code>.class</code> 是 .java 源代码编译的的字节码文件，真正可以被 jvm 执行</li>
+<li><code>.jar</code> 将一组 .class 文件打包而来，本质是一个 zip 格式的压缩文件</li>
+</ul>
+<p>##Maven<br>Apache Maven，是一个软件（特别是Java软件）项目管理及自动构建工具，由Apache软件基金会所提供。</p>
+<p>Maven项目使用项目对象模型（Project Object Model，POM）来配置。</p>
+<p>项目对象模型存储在名为 pom.xml 的文件中。</p>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2022
+
+            <span>吹雨听风.</span>
+
+            <span>
+                本站由 <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+                    强力驱动
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/links"
+                       class="whitespace-nowrap text-gray-500 "> 链接 </a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/atom.xml" title="RSS" target="_blank" rel="noopener">RSS</a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/sitemap.xml" title="网站地图" target="_blank" rel="noopener">网站地图</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)" target="_blank" rel="noopener">署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+
+
+
+    </div>
+</div>
+
+</body>
+</html>
