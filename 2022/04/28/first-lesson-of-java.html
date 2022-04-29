@@ -75,7 +75,7 @@
     <div>
         <div class="flex">
                 <span>
-                    <time datetime="Tue Apr 28 2020 16:40:00 GMT+0000">2020-04-28</time>
+                    <time datetime="Thu Apr 28 2022 16:40:00 GMT+0000">2022-04-28</time>
                 </span>
 
             
@@ -107,12 +107,12 @@
 <li><code>jdk</code> JDK(Java Development Kit)又称J2SDK(Java2 Software Development Kit)，是Java开发工具包， 它提供了Java的开发环境(提供了编译器javac等工具，用于将java文件编译为class文件)和运行环境(提供了JVM和Runtime辅助包，用于解析class文件使其得到运行)。如果你下载并安装了JDK，那么你不仅可以开发Java程序，也同时拥有了运行Java程序的平台。 JDK是整个Java的核心，包括了Java运行环境(JRE)，一堆Java工具tools.jar和Java标准类库 (rt.jar)。</li>
 </ul>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h1r10a12o9j20fk0b2t9r.jpg" alt="jre与jdk对比图"></p>
-<p>除了，上面之后，还有一堆的令人困惑版本号：Java 1.x Java 1x。</p>
+<p>除了上面的，还有一堆的令人困惑版本号：Java 1.x Java 1x。</p>
 <blockquote>
-<p>首先1996年发布了最初版本Java1.0，此后为Java1.1、J2SE1.2、J2SE1.3、J2SE1.4、采用 1.X的命名方式，直到2004年的JavaOne会议后版本数提升为5.0，这一新版本为Java SE5.0（或J2SE5.0，此处存在疑问，网上使用较多为Java SE5），在2006年Sun公司终结了已经有8年历史的J2SE、J2EE、J2ME的命名方式启用了今天的 Java SE、Java EE、Java ME  命名方式，而此后的版本为Java SE6、Java SE7、Java SE8、Java SE9、Java SE10、Java SE11、Java SE12、JAVA SE18</p>
+<p>首先1996年发布了最初版本Java1.0，此后为Java1.1、J2SE1.2、J2SE1.3、J2SE1.4、采用 1.X的命名方式，直到 2004 年的 JavaOne 会议后版本数提升为 5.0，这一新版本为Java SE5.0，在 2006 年 Sun 公司终结了已经有 8 年历史的 J2SE、J2EE、J2ME 的命名方式启用了今天的 Java SE、Java EE、Java ME  命名方式，而此后的版本为 Java SE6、Java SE7、Java SE8、Java SE9、Java SE10、Java SE11、Java SE12、JAVA SE18</p>
 </blockquote>
 <blockquote>
-<p>而JDK则在 Java1.0 到 Java9 对应每一个版本号 ：JDK1.0、JDK1.2 … JDK1.8、JDK1.9，Java10以后JDK对应名称为：JDk10、JDK11、JDK12、JDK18</p>
+<p>而JDK则在 Java1.0 到 Java9 对应每一个版本号 ：JDK1.0、JDK1.2 … JDK1.8、JDK1.9，Java10 以后JDK对应名称为：JDk10、JDK11、JDK12、JDK18</p>
 </blockquote>
 <p>所以</p>
 <ul>
@@ -129,9 +129,12 @@
 <li><code>JAVA_HOME</code> 通常它指的是JDK的目录。如果需要JDK的话，大部分程序会默认去环境变量中取JAVA_HOME这个变量。</li>
 <li><code>JRE_HOME</code> 同样，这也是一个约定的变量，通常指JRE目录。其实大部分Java程序不需要JDK，而是只需要其子集JRE，所以很多程序也会去取这个变量来用。</li>
 </ul>
-<p>在程序中，也可以通过 Java 提供的 API 来获取：<br>find String env &#x3D; System.getenv(“PATH”);<br>System.out.println(env);</p>
+<p>在程序中，也可以通过 Java 提供的 API 来获取：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">find <span class="type">String</span> <span class="variable">env</span> <span class="operator">=</span> System.getenv(<span class="string">&quot;PATH&quot;</span>);</span><br><span class="line">System.out.println(env);</span><br></pre></td></tr></table></figure>
+
 <p>因此，我们可以将设置版本以及选设置环境变量放在 <code>~/.bash_profile</code> 或 <code>~/.zshrc</code> 文件中：</p>
-<p>export JAVA_HOME&#x3D;<code>/usr/libexec/java_home -v 1.8.0_331</code><br>export PATH&#x3D;${JAVA_HOME}&#x2F;bin:$PATH</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=`/usr/libexec/java_home -v 1.8.0_331`</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$&#123;JAVA_HOME&#125;</span>/bin:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
+
 <p>##后缀<br>在 Java 程序中，有几种不同类型的文件后缀名，对应到程序的源码、编译等不同的阶段。</p>
 <ul>
 <li><code>.java</code> 是 Java 程序的源代码</li>
