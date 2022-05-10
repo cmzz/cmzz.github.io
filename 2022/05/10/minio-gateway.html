@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="吹雨听风独立博客">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        深入分析 MinIO Gateway 存储网关 - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        深入分析 MinIO Gateway 存储网关
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Tue May 10 2022 00:00:00 GMT+0000">2022-05-10</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+    <div class="mt-2">
+        <span>标签：</span>
+        
+            <a class="" href="/tags/#存储"
+               title="存储">存储</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#MinIO"
+               title="MinIO">MinIO</a>
+            
+        
+    </div>
+
+    </div>
+
+    <section class="pt-10 ">
+        <p>前一阵因为业务上的需要，需要一个文件存储系统用来保存业务的文件。但同时系统需要档私有化环境中进行部署，因此做选型时便考虑了 MinIO。</p>
+<p>MinIO 是一个基于Apache License v2.0开源协议的对象存储服务。兼容 AWS S3 like API，非常适合于存储大容量非结构化的数据，例如图片、视频、日志文件、备份数据和容器&#x2F;虚拟机镜像等，而一个对象文件可以是任意大小，最大支持5T。</p>
+<p>MinIO 除了是对象存储服务外，它还内置了一个存对网关 MinIO Gateway，后端支持多种 S3 like 类型的存储系统，像 S3、NAS、HDFS、Google Cloud对象存储等。</p>
+<p>由于 MinIO 存储网关的存在，使用系统具备较好的兼容性和可移植性。在必要时，可以非常方便的从 S3 迁移到 Google Cloud  的对象存储，而不用调整系统，甚至是使用在后端同时使用多个厂商存储服务实现多云混合，再或者部署多个网关实现分布式以提供更为强大的并发能力。</p>
+<p>MinIO 支持格式众多的云存储服务，不过在支持的产品列表中却没有我们常用的阿里云 OSS 或是腾讯云的储存服务，不得不说多少有些遗憾。</p>
+<p>目前 MinIO 官网的支持清单：</p>
+<ul>
+<li>Azure</li>
+<li>GCS</li>
+<li>S3</li>
+<li>HDFS</li>
+</ul>
+<h2 id="MinIO-Alibaba-OSS"><a href="#MinIO-Alibaba-OSS" class="headerlink" title="MinIO Alibaba OSS"></a>MinIO Alibaba OSS</h2><p>MinIO 在早期曾集成过 Alibaba OSS 的代理理服务，后因 Alibaba OSS 官方SDK 的 License 问题被 MinIO 移除。</p>
+<p>时隔一年，虽 License 修复但重新申请合并的请求被拒绝了，此后 MinIO 官方也没有再支持国内主流厂商的计划。具体细节可查看 MinIO issue 中的相关讨论。</p>
+<h2 id="MinIO-网关"><a href="#MinIO-网关" class="headerlink" title="MinIO 网关"></a>MinIO 网关</h2><p>MinIO 作为网关，主要有以下几个的功能。<br>首先，MinIO 网关能够屏蔽后台各存储产品的差异，便客户端提供统一的接口，使用 MinIO Clinent 即可在多种云之间切换。<br>其次，MinIO 网关能够向后端的云存储产品增加 MinIO 独有的一些功能，比如磁盘缓存、资源浏览器功能。<br>再次，通过部署多个网关，可实现分布的存储存架构，提升程序的可用性。</p>
+<p>前面提到在现行的版本中，只是内置少量几个产品的Gateway，若要使用其他 OSS 或其或一些非 S3 like 的产品需要动手去扩展。</p>
+<h3 id="Gateway的设计"><a href="#Gateway的设计" class="headerlink" title="Gateway的设计"></a>Gateway的设计</h3><p>Gateway 分为 GatewayLayer 和 ObjectLayer 及  Credential 2层。 GatewayLayer 包含网关名称和认证信息，而ObjectLayer 则是各对象存储的一个抽象。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h22cnt3q27j216q0i80tq.jpg"><br>￼￼<br>整个 MinIO Gateway 模块呈现一种分层的架构，如下图</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h22d5idcx6j20u010n76j.jpg"></p>
+<h4 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h4><p>网关的接口其实比较简单的，就 2 个方法，获取名称和实例化 Object Layer.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Gateway represents a gateway backend.</span></span><br><span class="line"><span class="keyword">type</span> Gateway <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// Name returns the unique name of the gateway.</span></span><br><span class="line">	Name() <span class="type">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// NewGatewayLayer returns a new  ObjectLayer.</span></span><br><span class="line">	NewGatewayLayer(creds madmin.Credentials) (ObjectLayer, <span class="type">error</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ObjectLayer 接口由于是对象存储产品的抽象层，所以方法比较多，涵盖了 S3 like 的 Bucket 和 Object 的所有操作。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ObjectLayer implements primitives for object API layer.</span></span><br><span class="line"><span class="keyword">type</span> ObjectLayer <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// Locking operations on object.</span></span><br><span class="line">	NewNSLock(bucket <span class="type">string</span>, objects ...<span class="type">string</span>) RWLocker</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Storage operations.</span></span><br><span class="line">	Shutdown(context.Context) <span class="type">error</span></span><br><span class="line">	NSScanner(ctx context.Context, bf *bloomFilter, updates <span class="keyword">chan</span>&lt;- DataUsageInfo, wantCycle <span class="type">uint32</span>, scanMode madmin.HealScanMode) <span class="type">error</span></span><br><span class="line">	BackendInfo() madmin.BackendInfo</span><br><span class="line">	StorageInfo(ctx context.Context) (StorageInfo, []<span class="type">error</span>)</span><br><span class="line">	LocalStorageInfo(ctx context.Context) (StorageInfo, []<span class="type">error</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Bucket operations.</span></span><br><span class="line">	MakeBucketWithLocation(ctx context.Context, bucket <span class="type">string</span>, opts BucketOptions) <span class="type">error</span></span><br><span class="line">	GetBucketInfo(ctx context.Context, bucket <span class="type">string</span>) (bucketInfo BucketInfo, err <span class="type">error</span>)</span><br><span class="line">	ListBuckets(ctx context.Context) (buckets []BucketInfo, err <span class="type">error</span>)</span><br><span class="line">	DeleteBucket(ctx context.Context, bucket <span class="type">string</span>, opts DeleteBucketOptions) <span class="type">error</span></span><br><span class="line">	ListObjects(ctx context.Context, bucket, prefix, marker, delimiter <span class="type">string</span>, maxKeys <span class="type">int</span>) (result ListObjectsInfo, err <span class="type">error</span>)</span><br><span class="line">	ListObjectsV2(ctx context.Context, bucket, prefix, continuationToken, delimiter <span class="type">string</span>, maxKeys <span class="type">int</span>, fetchOwner <span class="type">bool</span>, startAfter <span class="type">string</span>) (result ListObjectsV2Info, err <span class="type">error</span>)</span><br><span class="line">	ListObjectVersions(ctx context.Context, bucket, prefix, marker, versionMarker, delimiter <span class="type">string</span>, maxKeys <span class="type">int</span>) (result ListObjectVersionsInfo, err <span class="type">error</span>)</span><br><span class="line">	<span class="comment">// Walk lists all objects including versions, delete markers.</span></span><br><span class="line">	Walk(ctx context.Context, bucket, prefix <span class="type">string</span>, results <span class="keyword">chan</span>&lt;- ObjectInfo, opts ObjectOptions) <span class="type">error</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// function MUST NOT return a non-nil ReadCloser.</span></span><br><span class="line">	GetObjectNInfo(ctx context.Context, bucket, object <span class="type">string</span>, rs *HTTPRangeSpec, h http.Header, lockType LockType, opts ObjectOptions) (reader *GetObjectReader, err <span class="type">error</span>)</span><br><span class="line">	GetObjectInfo(ctx context.Context, bucket, object <span class="type">string</span>, opts ObjectOptions) (objInfo ObjectInfo, err <span class="type">error</span>)</span><br><span class="line">	PutObject(ctx context.Context, bucket, object <span class="type">string</span>, data *PutObjReader, opts ObjectOptions) (objInfo ObjectInfo, err <span class="type">error</span>)</span><br><span class="line">	CopyObject(ctx context.Context, srcBucket, srcObject, destBucket, destObject <span class="type">string</span>, srcInfo ObjectInfo, srcOpts, dstOpts ObjectOptions) (objInfo ObjectInfo, err <span class="type">error</span>)</span><br><span class="line">	DeleteObject(ctx context.Context, bucket, object <span class="type">string</span>, opts ObjectOptions) (ObjectInfo, <span class="type">error</span>)</span><br><span class="line">	DeleteObjects(ctx context.Context, bucket <span class="type">string</span>, objects []ObjectToDelete, opts ObjectOptions) ([]DeletedObject, []<span class="type">error</span>)</span><br><span class="line">	TransitionObject(ctx context.Context, bucket, object <span class="type">string</span>, opts ObjectOptions) <span class="type">error</span></span><br><span class="line">	RestoreTransitionedObject(ctx context.Context, bucket, object <span class="type">string</span>, opts ObjectOptions) <span class="type">error</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Multipart operations.</span></span><br><span class="line">	ListMultipartUploads(ctx context.Context, bucket, prefix, keyMarker, uploadIDMarker, delimiter <span class="type">string</span>, maxUploads <span class="type">int</span>) (result ListMultipartsInfo, err <span class="type">error</span>)</span><br><span class="line">	NewMultipartUpload(ctx context.Context, bucket, object <span class="type">string</span>, opts ObjectOptions) (uploadID <span class="type">string</span>, err <span class="type">error</span>)</span><br><span class="line">	CopyObjectPart(ctx context.Context, srcBucket, srcObject, destBucket, destObject <span class="type">string</span>, uploadID <span class="type">string</span>, partID <span class="type">int</span>,</span><br><span class="line">		startOffset <span class="type">int64</span>, length <span class="type">int64</span>, srcInfo ObjectInfo, srcOpts, dstOpts ObjectOptions) (info PartInfo, err <span class="type">error</span>)</span><br><span class="line">	PutObjectPart(ctx context.Context, bucket, object, uploadID <span class="type">string</span>, partID <span class="type">int</span>, data *PutObjReader, opts ObjectOptions) (info PartInfo, err <span class="type">error</span>)</span><br><span class="line">	GetMultipartInfo(ctx context.Context, bucket, object, uploadID <span class="type">string</span>, opts ObjectOptions) (info MultipartInfo, err <span class="type">error</span>)</span><br><span class="line">	ListObjectParts(ctx context.Context, bucket, object, uploadID <span class="type">string</span>, partNumberMarker <span class="type">int</span>, maxParts <span class="type">int</span>, opts ObjectOptions) (result ListPartsInfo, err <span class="type">error</span>)</span><br><span class="line">	AbortMultipartUpload(ctx context.Context, bucket, object, uploadID <span class="type">string</span>, opts ObjectOptions) <span class="type">error</span></span><br><span class="line">	CompleteMultipartUpload(ctx context.Context, bucket, object, uploadID <span class="type">string</span>, uploadedParts []CompletePart, opts ObjectOptions) (objInfo ObjectInfo, err <span class="type">error</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Policy operations</span></span><br><span class="line">	SetBucketPolicy(context.Context, <span class="type">string</span>, *policy.Policy) <span class="type">error</span></span><br><span class="line">	GetBucketPolicy(context.Context, <span class="type">string</span>) (*policy.Policy, <span class="type">error</span>)</span><br><span class="line">	DeleteBucketPolicy(context.Context, <span class="type">string</span>) <span class="type">error</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Supported operations check</span></span><br><span class="line">	IsNotificationSupported() <span class="type">bool</span></span><br><span class="line">	IsListenSupported() <span class="type">bool</span></span><br><span class="line">	IsEncryptionSupported() <span class="type">bool</span></span><br><span class="line">	IsTaggingSupported() <span class="type">bool</span></span><br><span class="line">	IsCompressionSupported() <span class="type">bool</span></span><br><span class="line">	SetDriveCounts() []<span class="type">int</span> <span class="comment">// list of erasure stripe size for each pool in order.</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Healing operations.</span></span><br><span class="line">	HealFormat(ctx context.Context, dryRun <span class="type">bool</span>) (madmin.HealResultItem, <span class="type">error</span>)</span><br><span class="line">	HealBucket(ctx context.Context, bucket <span class="type">string</span>, opts madmin.HealOpts) (madmin.HealResultItem, <span class="type">error</span>)</span><br><span class="line">	HealObject(ctx context.Context, bucket, object, versionID <span class="type">string</span>, opts madmin.HealOpts) (madmin.HealResultItem, <span class="type">error</span>)</span><br><span class="line">	HealObjects(ctx context.Context, bucket, prefix <span class="type">string</span>, opts madmin.HealOpts, fn HealObjectFn) <span class="type">error</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Backend related metrics</span></span><br><span class="line">	GetMetrics(ctx context.Context) (*BackendMetrics, <span class="type">error</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Returns health of the backend</span></span><br><span class="line">	Health(ctx context.Context, opts HealthOptions) HealthResult</span><br><span class="line">	ReadHealth(ctx context.Context) <span class="type">bool</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Metadata operations</span></span><br><span class="line">	PutObjectMetadata(context.Context, <span class="type">string</span>, <span class="type">string</span>, ObjectOptions) (ObjectInfo, <span class="type">error</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ObjectTagging operations</span></span><br><span class="line">	PutObjectTags(context.Context, <span class="type">string</span>, <span class="type">string</span>, <span class="type">string</span>, ObjectOptions) (ObjectInfo, <span class="type">error</span>)</span><br><span class="line">	GetObjectTags(context.Context, <span class="type">string</span>, <span class="type">string</span>, ObjectOptions) (*tags.Tags, <span class="type">error</span>)</span><br><span class="line">	DeleteObjectTags(context.Context, <span class="type">string</span>, <span class="type">string</span>, ObjectOptions) (ObjectInfo, <span class="type">error</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h3><p>Nas gateway 非常之简单： </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NAS implements Gateway.</span></span><br><span class="line"><span class="keyword">type</span> NAS <span class="keyword">struct</span> &#123;</span><br><span class="line">	path <span class="type">string</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>就是一个 path 参数，但在 <code>NewGatewayLayer()</code> 中实例化了一个<code>FSObjects</code>，其结构是这样的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// FSObjects - Implements fs object layer.</span></span><br><span class="line"><span class="keyword">type</span> FSObjects <span class="keyword">struct</span> &#123;</span><br><span class="line">	GatewayUnsupported</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Path to be exported over S3 API.</span></span><br><span class="line">	fsPath <span class="type">string</span></span><br><span class="line">	<span class="comment">// meta json filename, varies by fs / cache backend.</span></span><br><span class="line">	metaJSONFile <span class="type">string</span></span><br><span class="line">	<span class="comment">// Unique value to be used for all</span></span><br><span class="line">	<span class="comment">// temporary transactions.</span></span><br><span class="line">	fsUUID <span class="type">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// This value shouldn&#x27;t be touched, once initialized.</span></span><br><span class="line">	fsFormatRlk *lock.RLockedFile <span class="comment">// Is a read lock on `format.json`.</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// FS rw pool.</span></span><br><span class="line">	rwPool *fsIOPool</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ListObjects pool management.</span></span><br><span class="line">	listPool *TreeWalkPool</span><br><span class="line"></span><br><span class="line">	diskMount <span class="type">bool</span></span><br><span class="line"></span><br><span class="line">	appendFileMap   <span class="keyword">map</span>[<span class="type">string</span>]*fsAppendFile</span><br><span class="line">	appendFileMapMu sync.Mutex</span><br><span class="line"></span><br><span class="line">	<span class="comment">// To manage the appendRoutine go-routines</span></span><br><span class="line">	nsMutex *nsLockMap</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>不难看出，Nas 实际上是其于 MinIO 内置 <code>FSObjects</code> 来实现的。 <code>FSObjects</code> 是一种其于文件系统的网关，即使用本地文件系统来作为存储基础，这和 Nas 是一致的。</p>
+<p>再来看 s3 gateway，相对来说就复杂得多。 </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> s3Objects <span class="keyword">struct</span> &#123;</span><br><span class="line">	minio.GatewayUnsupported</span><br><span class="line">	Client     *miniogo.Core</span><br><span class="line">	HTTPClient *http.Client</span><br><span class="line">	Metrics    *minio.BackendMetrics</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> s3Objects 通过 <code>NewGatewayLayer()</code> 实例化，参数是 s3 认证要素 Credentials，内部会实例化一个 <code>http.Transport</code>，后续所有操作都会使用该http 客户端访问 s3 api 完成相应的功能实现。</p>
+<h3 id="启动过程分析"><a href="#启动过程分析" class="headerlink" title="启动过程分析"></a>启动过程分析</h3><h4 id="Gateway-启动过程"><a href="#Gateway-启动过程" class="headerlink" title="Gateway 启动过程"></a>Gateway 启动过程</h4><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h234nd8mp2j21w40u0djj.jpg"><br>MinIO Gateway 是一个相关独立的系统，从命令行启动，具体的过程如上图。</p>
+<p><code>main.go</code> 文件的中引入了 <code>cmd/gateway/</code> 这个包，<code>gateway</code> 包在<code>init</code> 过程中又引入了 <code>nas-gateway.go</code> 和 <code>s3-gateway.go</code> 。</p>
+<p>这个 2 个就是系统默认附带的 NAS  网关 和 S3 网关的具体实现，它们在初始化时分别调用了 <code>cmd/gateway-main.go</code> 了 <code>RegisterGatewayCommand()</code> 方法，将自身注册成为 <code>gateway</code> 的子命令。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">minio.RegisterGatewayCommand(cli.Command&#123;</span><br><span class="line">		Name:               minio.S3BackendGateway,</span><br><span class="line">		Usage:              <span class="string">&quot;Amazon Simple Storage Service (S3)&quot;</span>,</span><br><span class="line">		Action:             s3GatewayMain,</span><br><span class="line">		CustomHelpTemplate: s3GatewayTemplate,</span><br><span class="line">		HideHelpCommand:    <span class="literal">true</span>,</span><br><span class="line">	&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>所有网关初始化完成后，<code>main()</code> 函数执行。过程中调用 <code>cmd/main.go</code> 中 <code>Main()</code> ，同时会通过 <code>NewApp</code> 创建一个 app 实例，最后运行 app 实例的  run 方法执行命令功能。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewApp</span><span class="params">()</span></span> *App &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;App&#123;</span><br><span class="line">		Name:         filepath.Base(os.Args[<span class="number">0</span>]),</span><br><span class="line">		HelpName:     filepath.Base(os.Args[<span class="number">0</span>]),</span><br><span class="line">		Usage:        <span class="string">&quot;A new cli application&quot;</span>,</span><br><span class="line">		UsageText:    <span class="string">&quot;&quot;</span>,</span><br><span class="line">		Version:      <span class="string">&quot;0.0.0&quot;</span>,</span><br><span class="line">		BashComplete: DefaultAppComplete,</span><br><span class="line">		Action:       helpCommand.Action,</span><br><span class="line">		Compiled:     compileTime(),</span><br><span class="line">		Writer:       os.Stdout,	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>App 实例的初始化工作中包括 <code>gateway</code> 命令的注册。由于前面在 <code>init()</code>过程中已经将 <code>nas / s3</code> 的网关注册成为 <code>gateway</code> 的 <code>subCommands</code> ，因此 gateway 注册之后便 可以通过 <code>gateway s3</code> 子命令来启动 s3 网关。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">RegisterGatewayCommand</span><span class="params">(cmd cli.Command)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">	cmd.Flags = <span class="built_in">append</span>(<span class="built_in">append</span>(cmd.Flags, ServerFlags...), GlobalFlags...)</span><br><span class="line">	gatewayCmd.Subcommands = <span class="built_in">append</span>(gatewayCmd.Subcommands, cmd)</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在完成所有命令注册之后，会根据输入参数调用对应的 Gateway 子命，基中调用 <code>StartGateway()</code> 完成整个 Gateway 启动。</p>
+<h4 id="S3-Gateway-启动"><a href="#S3-Gateway-启动" class="headerlink" title="S3 Gateway 启动"></a>S3 Gateway 启动</h4><p>在注册 s3 Gateway 子命令到 Gateway 时需要传递一个 Action，即 子命令的入口程序。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">minio.RegisterGatewayCommand(cli.Command&#123;</span><br><span class="line">	Name:               minio.S3BackendGateway,</span><br><span class="line">	Usage:              <span class="string">&quot;Amazon Simple Storage Service (S3)&quot;</span>,</span><br><span class="line">	Action:             s3GatewayMain,</span><br><span class="line">	CustomHelpTemplate: s3GatewayTemplate,</span><br><span class="line">	HideHelpCommand:    <span class="literal">true</span>,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><code>s3GatewayMain()</code> 接受 Context 作接参数，在验证参数合法之后便会调用 <code>StartGateway()</code> 启动网关。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// StartGateway - handler for &#x27;minio gateway &lt;name&gt;&#x27;.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">StartGateway</span><span class="params">(ctx *cli.Context, gw Gateway)</span></span> &#123;</span><br><span class="line">	<span class="comment">// ... more code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于<code>StartGateway</code> 程序比较复杂，在这里就不贴代码，仅详细分析一下启动过程中所进行的主要操作。</p>
+<ul>
+<li>Gateway 在启动之后是一个常驻进程，因此首先需要为其注册系统信号监听</li>
+<li>初始化终端日志</li>
+<li>初始化 Gateway 级别的全局 Locker</li>
+<li>初始化系统配置，MinIO 使用的是自己实的配置解析系统。</li>
+<li>在完成基础设置之后会初使化 Gateway router， 用以给客户端暴露一组接口</li>
+<li>初使化管理功能路由（admin router ）</li>
+<li>初使化健康检查功能路由（healthy check router ）</li>
+<li>初使化 Metric router</li>
+<li>使用 Credentials 调用 NewGatewayLayer 获对 ObjectLayer 实例</li>
+<li>启动 IAM 子程序 （IAM sub-system）</li>
+<li>启动 httpServer 监听客户端请求</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>上面从代码级别梳理了 Gateway 的设计，在了解 Gateway 原理和启动过程之后，我们为基添加默认没有支持的存储产品也就变得非常简单。</p>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.flysnow.org/2020/10/19/minio-gateway-sourcecode.html">从源代码级别看懂MinIO对象存储网关的实现</a></li>
+</ul>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2022
+
+            <span>吹雨听风.</span>
+
+            <span>
+                本站由 <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+                    强力驱动
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/links"
+                       class="whitespace-nowrap text-gray-500 "> 链接 </a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/atom.xml" title="RSS" target="_blank" rel="noopener">RSS</a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/sitemap.xml" title="网站地图" target="_blank" rel="noopener">网站地图</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)" target="_blank" rel="noopener">署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+
+
+
+    </div>
+</div>
+
+</body>
+</html>
