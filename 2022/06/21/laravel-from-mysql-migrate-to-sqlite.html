@@ -24,7 +24,7 @@
 <script type="text/javascript" src="/js/theme.js?v="></script>
 <title>
     
-        GitHub 多账号的 SSH 配置 - 吹雨听风
+        Laravel 应用从 MySQL 迁移到 SQLite - 吹雨听风
     
 </title>    
 
@@ -69,20 +69,17 @@
             
 <article class="max-w-4xl mx-auto py-10 typo">
     <h1 style="margin-top: 0;">
-        GitHub 多账号的 SSH 配置
+        Laravel 应用从 MySQL 迁移到 SQLite
     </h1>
 
     <div>
         <div class="flex">
                 <span>
-                    <time datetime="Sun Jan 01 2017 00:00:00 GMT+0000">2017-01-01</time>
+                    <time datetime="Tue Jun 21 2022 00:00:00 GMT+0000">2022-06-21</time>
                 </span>
 
             
 
-            
-                <span class="px-3 text-gray-300">|</span>
-                <a href="https://learnku.com/articles/4411/github-multi-account-ssh-configuration" title="post.external" target="_blank" rel="noopener">post.external</a>
             
         </div>
 
@@ -90,20 +87,8 @@
     <div class="mt-2">
         <span>标签：</span>
         
-            <a class="" href="/tags/#技术"
-               title="技术">技术</a>
-            
-                <span>,</span>
-            
-        
-            <a class="" href="/tags/#Docker"
-               title="Docker">Docker</a>
-            
-                <span>,</span>
-            
-        
-            <a class="" href="/tags/#容器"
-               title="容器">容器</a>
+            <a class="" href="/tags/#Laravel"
+               title="Laravel">Laravel</a>
             
         
     </div>
@@ -111,43 +96,7 @@
     </div>
 
     <section class="pt-10 ">
-        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>有这样的情况，现在有 2 个 github 账号。现在都想使用 ssh key 的方式拉取代码。但是第二个账号无法使用，怎么办?</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="1-生成-SSH-key"><a href="#1-生成-SSH-key" class="headerlink" title="1. 生成 SSH key"></a>1. 生成 SSH key</h3><p>1.1 生成第一个 key</p>
-<pre><code>$ ssh-keygen -t rsa -C &quot;user1@email.com&quot;
-</code></pre>
-<p>然后，回车确认即可。最后会生成</p>
-<pre><code>id_rsa
-id_rsa.pub
-</code></pre>
-<p>2个文件。</p>
-<p>1.2 生成第二个 key</p>
-<pre><code>$ ssh-keygen -t rsa -C &quot;user2@email.com&quot;
-</code></pre>
-<p>注意，这里需要给 key 设置名称。要不然会覆盖第一个key，例如:</p>
-<pre><code> ~/.ssh/id_rsa_user2@email.com
-</code></pre>
-<p>至此，我们会得到4个文件。</p>
-<h3 id="2-添加密钥到-SSH-agent-中"><a href="#2-添加密钥到-SSH-agent-中" class="headerlink" title="2. 添加密钥到 SSH agent 中"></a>2. 添加密钥到 SSH agent 中</h3><pre><code>$ ssh-agent bash
-$ ssh-add ~/.ssh/id_rsa_user2@email.com
-</code></pre>
-<h3 id="3-修改-SSH-的-config-配置"><a href="#3-修改-SSH-的-config-配置" class="headerlink" title="3. 修改 SSH 的 config 配置"></a>3. 修改 SSH 的 config 配置</h3><pre><code>$ touch config    
-</code></pre>
-<p>增加:</p>
-<pre><code>HOST user2.github
-hostname github.com
-IdentityFile ~/.ssh/id_rsa_user2@email.com
-User user2@email.com
-</code></pre>
-<h3 id="4-配置公钥"><a href="#4-配置公钥" class="headerlink" title="4. 配置公钥"></a>4. 配置公钥</h3><p>把 id_rsa.pub  和 <a href="mailto:&#105;&#x64;&#x5f;&#114;&#x73;&#x61;&#x5f;&#x75;&#x73;&#x65;&#x72;&#50;&#x40;&#101;&#109;&#97;&#105;&#108;&#x2e;&#x63;&#111;&#109;&#x2e;&#112;&#117;&#x62;">&#105;&#x64;&#x5f;&#114;&#x73;&#x61;&#x5f;&#x75;&#x73;&#x65;&#x72;&#50;&#x40;&#101;&#109;&#97;&#105;&#108;&#x2e;&#x63;&#111;&#109;&#x2e;&#112;&#117;&#x62;</a> 文件的内容添加到对应账号的公钥配置中。</p>
-<h3 id="5-拉取项目"><a href="#5-拉取项目" class="headerlink" title="5. 拉取项目"></a>5. 拉取项目</h3><p>例如，user2 要克隆这个项目:</p>
-<pre><code>git@github.com:EvaEngine/Dockerfiles.git
-</code></pre>
-<p>则执行下面的命令即可:</p>
-<pre><code>$ git clone git@user2.github:EvaEngine/Dockerfiles.git
-</code></pre>
-<p>注意，地址中的 host 替换为了 config 中配置的名称。</p>
-<p>搞定。</p>
-
+        
     </section>
 </article>
         </main>

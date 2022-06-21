@@ -5,10 +5,6 @@
     <lastmod>2022-06-21</lastmod>
   </url>
   <url>
-    <loc>https://www.wewx.cn/2022/06/03/changshan.html</loc>
-    <lastmod>2022-06-21</lastmod>
-  </url>
-  <url>
     <loc>https://www.wewx.cn/2018/08/24/docker-expose-publish.html</loc>
     <lastmod>2022-06-21</lastmod>
   </url>
@@ -18,6 +14,10 @@
   </url>
   <url>
     <loc>https://www.wewx.cn/2022/02/23/file-service-selection.html</loc>
+    <lastmod>2022-06-21</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2022/06/03/first-impressions-of-changsha.html</loc>
     <lastmod>2022-06-21</lastmod>
   </url>
   <url>
@@ -34,6 +34,10 @@
   </url>
   <url>
     <loc>https://www.wewx.cn/2018/06/01/indexing-knowledge-about-the-mysql-innodb-engine.html</loc>
+    <lastmod>2022-06-21</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2022/06/21/laravel-from-mysql-migrate-to-sqlite.html</loc>
     <lastmod>2022-06-21</lastmod>
   </url>
   <url>
