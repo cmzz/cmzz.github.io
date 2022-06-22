@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="吹雨听风独立博客">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        Laravel 应用从 MySQL 迁移到 SQLite - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        Laravel 应用从 MySQL 迁移到 SQLite
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Wed Jun 22 2022 00:00:00 GMT+0000">2022-06-22</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+    <div class="mt-2">
+        <span>标签：</span>
+        
+            <a class="" href="/tags/#Laravel"
+               title="Laravel">Laravel</a>
+            
+        
+    </div>
+
+    </div>
+
+    <section class="pt-10 ">
+        <p>阿里云提醒 RDS 要续费了，几大百一年但实际上现在只有几个小型的应用在用 MySQL。疫情之下，本着开源结流的原则，打算把 MySQL 给替换成 SQLite 以结省银子。</p>
+<p>之前对于 SQLite 也就是了解的程度但并没有实际使用，应此在正式切换之前还需要做一些准备工作。</p>
+<p>SQLite 和 MySQL 类似，都是一种 关系数据库管理系统 （RDBMS，Relational Database Management System）。以数据表作为基础的数据存储系统。</p>
+<h2 id="SQLite-的优缺点"><a href="#SQLite-的优缺点" class="headerlink" title="SQLite 的优缺点"></a>SQLite 的优缺点</h2><blockquote>
+<p>Small. Fast. Reliable.</p>
+</blockquote>
+<p>SQLite 是一款 C 编写的关系数据库。正如其名，SQLite 并非是作为一个独立的进程运行，也不需要使用特这的通信息协议与应用程序连接，而是直接作为应用程序的一部分随程序发布，这样的特性使 SQLite 非常的轻量级与易于使用，在手机、电脑、嵌入式设备、应用内嵌数据库等方面有着非常广泛的应用。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3h1e224qkj20bb034q2u.jpg" alt="https://www.sqlitetutorial.net/what-is-sqlite/"></p>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>零配置，易使用</li>
+<li>可跨平台。SQLite 基于特定格式的单个文件，可移动性和跨平台特性好</li>
+<li>备份容易。直接使用 <code>cp</code> 复制数据库文件即可</li>
+<li>开方测试方便。基于 SQLite 的自<a target="_blank" rel="noopener" href="https://www.sqlite.org/selfcontained.html">包含特性</a>，使其的以来非常少，在开发过程中可作为替代手段，待上线后有需要再改为其他 RDBMS</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>没有用户系统</li>
+<li>不支持网络访问</li>
+<li>不适用于大型程序</li>
+<li>提升性能的手段有限</li>
+</ul>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><ul>
+<li>嵌入式设备 </li>
+<li>物联设备</li>
+<li>作为 excel 的替代</li>
+<li>小型应用</li>
+<li>小量数据分析</li>
+<li>数据缓存 </li>
+<li>开发和测试阶段的临时方案</li>
+<li>教学目的</li>
+</ul>
+<h2 id="MySQL-的优缺点"><a href="#MySQL-的优缺点" class="headerlink" title="MySQL 的优缺点"></a>MySQL 的优缺点</h2><p>MySQL 是当前最为热门的关系数据库（RDBMS），目前世界上大多数应用都在使用它。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3h1iy6ys1j20gs06m0sw.jpg" alt="https://www.sqlitetutorial.net/what-is-sqlite/"></p>
+<h3 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>功能强大</li>
+<li>用户管理功能</li>
+<li>内置更多的安全功能</li>
+<li>更精细的事务和锁机制</li>
+<li>更好的并发性能</li>
+<li>支持网络访问</li>
+</ul>
+<h3 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>数据跨平台性差</li>
+<li>可靠性问题</li>
+<li>发展停滞，尽管 MySQL 仍是开源软件，但自从被收购之后发展已放缓</li>
+</ul>
+<h3 id="应用场景-1"><a href="#应用场景-1" class="headerlink" title="应用场景"></a>应用场景</h3><ul>
+<li>分布式协作</li>
+<li>大流量网站或中型应用系统</li>
+<li>事务支持的程序</li>
+<li>需要大量数据写入</li>
+<li>存储更大规模数据量</li>
+</ul>
+<h2 id="Laravel-应用替换"><a href="#Laravel-应用替换" class="headerlink" title="Laravel 应用替换"></a>Laravel 应用替换</h2><p><code>mysql-to-sqlite3</code> 是一款 Python 的程序，可以将 MySQL 的数据库转换为 SQLite3 格式的数据库。</p>
+<h3 id="安装并运行转换"><a href="#安装并运行转换" class="headerlink" title="安装并运行转换"></a>安装并运行转换</h3><pre><code>pip install mysql-to-sqlite3
+mysql2sqlite --help
+
+
+mysql2sqlite -f ./sqlite.db \
+-d mysql数据库名称 \
+-u mysql数据库用户名 \
+--mysql-password mysql数据库密码 \
+-h mysql数据库地址
+</code></pre>
+<p>上面的命令可以生成 <code>sqlite.db</code> 文件，直接使用即可。</p>
+<h3 id="调整-Laravel-配置"><a href="#调整-Laravel-配置" class="headerlink" title="调整 Laravel 配置"></a>调整 Laravel 配置</h3><pre><code>DB_CONNECTION=sqlite
+DB_DATABASE=/absolute/path/to/database.sqlite
+</code></pre>
+<p>直接修改 <code>.env</code> 中的 MYSQL 配置，参考上面的的就行。注意 <code>database.sqlite</code> 文件需要有可写权限。</p>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2022
+
+            <span>吹雨听风.</span>
+
+            <span>
+                本站由 <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+                    强力驱动
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/links"
+                       class="whitespace-nowrap text-gray-500 "> 链接 </a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/atom.xml" title="RSS" target="_blank" rel="noopener">RSS</a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/sitemap.xml" title="网站地图" target="_blank" rel="noopener">网站地图</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)" target="_blank" rel="noopener">署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+
+
+
+    </div>
+</div>
+
+</body>
+</html>

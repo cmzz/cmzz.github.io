@@ -1,3 +1,6 @@
+https://www.wewx.cn/about/index.html
+https://www.wewx.cn/links/index.html
+https://www.wewx.cn/tags/index.html
 https://www.wewx.cn/2022/06/19/Portainer-of-QNAP-NA-advanced-gameplay.html
 https://www.wewx.cn/2018/08/24/docker-expose-publish.html
 https://www.wewx.cn/2017/04/10/explor-https.html
@@ -7,7 +10,7 @@ https://www.wewx.cn/2022/04/28/first-lesson-of-java.html
 https://www.wewx.cn/2017/01/01/github-multi-account-ssh-configuration.html
 https://www.wewx.cn/2022/04/16/hexo-theme-snow-white.html
 https://www.wewx.cn/2018/06/01/indexing-knowledge-about-the-mysql-innodb-engine.html
-https://www.wewx.cn/2022/06/21/laravel-from-mysql-migrate-to-sqlite.html
+https://www.wewx.cn/2022/06/22/laravel-from-mysql-migrate-to-sqlite.html
 https://www.wewx.cn/2022/05/10/minio-gateway.html
 https://www.wewx.cn/2017/12/08/mySQL-partitioned-table-exploration.html
 https://www.wewx.cn/2022/05/30/office-docs-online-preview.html
@@ -18,9 +21,6 @@ https://www.wewx.cn/2022/05/03/rfid.html
 https://www.wewx.cn/2022/04/24/thoughts-from-the-barcode-scanner-manual.html
 https://www.wewx.cn/2018/10/10/docker-network-mode-not-complete-guide.html
 https://www.wewx.cn/2018/07/20/docker-network-port-mapping.html
-https://www.wewx.cn/about/index.html
-https://www.wewx.cn/links/index.html
-https://www.wewx.cn/tags/index.html
 https://www.wewx.cn/
 https://www.wewx.cn/tags/NAS/
 https://www.wewx.cn/tags/%E6%8A%80%E6%9C%AF/
