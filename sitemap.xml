@@ -2,15 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://www.wewx.cn/2022/06/19/Portainer-of-QNAP-NA-advanced-gameplay.html</loc>
-    
-    <lastmod>2022-09-02</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.wewx.cn/2018/08/24/docker-expose-publish.html</loc>
     
     <lastmod>2022-09-02</lastmod>
@@ -219,6 +210,15 @@
   
   <url>
     <loc>https://www.wewx.cn/tags/index.html</loc>
+    
+    <lastmod>2022-09-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2022/06/19/Portainer-of-QNAP-NA-advanced-gameplay.html</loc>
     
     <lastmod>2022-09-02</lastmod>
     
