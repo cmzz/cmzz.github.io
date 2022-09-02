@@ -24,7 +24,7 @@
 <script type="text/javascript" src="/js/theme.js?v="></script>
 <title>
     
-        吹雨听风
+        MinIO Go Client OOM 引发的故障排查 - 吹雨听风
     
 </title>    
 
@@ -69,13 +69,13 @@
             
 <article class="max-w-4xl mx-auto py-10 typo">
     <h1 style="margin-top: 0;">
-        
+        MinIO Go Client OOM 引发的故障排查
     </h1>
 
     <div>
         <div class="flex">
                 <span>
-                    <time datetime="Fri Sep 02 2022 10:13:13 GMT+0000">2022-09-02</time>
+                    <time datetime="Sun Sep 02 2018 02:36:48 GMT+0000">2018-09-02</time>
                 </span>
 
             
@@ -84,18 +84,36 @@
         </div>
 
         
+    <div class="mt-2">
+        <span>标签：</span>
+        
+            <a class="" href="/tags/#技术"
+               title="技术">技术</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#Docker"
+               title="Docker">Docker</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#MinIO"
+               title="MinIO">MinIO</a>
+            
+        
+    </div>
+
     </div>
 
     <section class="pt-10 ">
-        <p><strong>背景</strong></p>
-<p>本周我们系统为了提升包含多文件的任务处理效率，将原来的串行化文件处理做了一优化，改成了协程并行。</p>
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>本周我们系统为了提升包含多文件的任务处理效率，将原来的串行化文件处理做了一优化，改成了协程并行。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wg.Add(<span class="built_in">len</span>(fileList))</span><br><span class="line"><span class="keyword">for</span> _, pdf := <span class="keyword">range</span> fileList &#123;</span><br><span class="line">    SplitPdfFile(f)</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line">wg.Wait()</span><br></pre></td></tr></table></figure>
 
 <p>SplitPdfFile 会调用 文件服务 进行 PDF 文件处理 （按页分割、合并页码）。</p>
-<p><strong>问题浮现</strong></p>
-<p>代码上线后，完了，功能完全不可用。原因是文件服务返回了 503 的错误响应。</p>
-<p><strong>问题排查与分析过程</strong></p>
-<h3 id="1-为什么会-503"><a href="#1-为什么会-503" class="headerlink" title="1. 为什么会 503"></a>1. 为什么会 503</h3><p>通过 rancher 查看，服务被重启了。由于是服务直接被 k8s 重启，程序并没有记录日志，而且我们也无法进入服务器从外部查看 k8s 日志，没有进一步的信息，但其他 API 并不到返回 503，仅仅是这一个 API，于是在当时盲猜了几个原因：</p>
+<h2 id="问题浮现"><a href="#问题浮现" class="headerlink" title="问题浮现"></a>问题浮现</h2><p>代码上线后，完了，功能完全不可用。原因是文件服务返回了 503 的错误响应。</p>
+<h2 id="问题排查与分析过程"><a href="#问题排查与分析过程" class="headerlink" title="问题排查与分析过程"></a>问题排查与分析过程</h2><h3 id="1-为什么会-503"><a href="#1-为什么会-503" class="headerlink" title="1. 为什么会 503"></a>1. 为什么会 503</h3><p>通过 rancher 查看，服务被重启了。由于是服务直接被 k8s 重启，程序并没有记录日志，而且我们也无法进入服务器从外部查看 k8s 日志，没有进一步的信息，但其他 API 并不到返回 503，仅仅是这一个 API，于是在当时盲猜了几个原因：</p>
 <ul>
 <li>是有没有 recovery 的 panic 导致程序异常了</li>
 <li>因为是文件处理，可能文件异常</li>
@@ -142,7 +160,7 @@
 
 <p>其实，PutObject 方法原型中的 Waring 有提醒我们，使用该方法时都需要传递文件尺寸，奈何一开始没有注意到！</p>
 <h3 id="7-解决方法"><a href="#7-解决方法" class="headerlink" title="7. 解决方法"></a>7. 解决方法</h3><p>找到了问题，那解决方案也很简单了。在 size 处传递正确的文件尺寸即可。</p>
-<h3 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. 总结</h3><ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
 <li>从业务上考虑我们要设置多大的文件</li>
 <li>根据文件 Size 上限、最多支持 10, 000 part 、并发度控制，容器内存大小等因素来指定 part 大小</li>
 <li>minio 需要根据 part size 的大小来确定最高的并发度来防止容器 OOM，并且需要控制到 minio 驱动层，而不是业务层</li>
