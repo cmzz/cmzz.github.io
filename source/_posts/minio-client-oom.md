@@ -88,6 +88,7 @@ func anotherFun(f *os.File) {
      // code
 }
 ```
+---
 
 Before
 
@@ -114,7 +115,7 @@ for _, v := range fileList {
 仔细排查文件操作之后，所有文件使用都已规范、文件关闭时机都很合理、也不存在重复读入的问题，但在线上问题依旧！
 
 ### 4. 上神器 pprof
-借助pprof，我们观察到在本机运行，即使是 50 个并发循环 10 次这样量级内存占用依然是稳定的！并不会像服务器上一样出现 OOM 甚至崩溃的情况。
+借助pprof，我们观察到在本机运行，即使是 50 个并发循环 10 次这样量级内存占用依然是稳定的！并不会像服务器上一样出现 OOM 并引起崩溃的情况。
 
 程序启动
 
@@ -124,25 +125,21 @@ for _, v := range fileList {
 
 ![](https://tva1.sinaimg.cn/large/e6c9d24egy1h5sfagqbglj215o0is76u.jpg)
 
-由些基本可以确定问题仅出现在线上环境（test-demo），于是把线上的 heap 信息down 到本地分析，最终发现是 MinIO Client 占用了大量内存没有释放。
+由此基本可以确定问题仅出现在线上环境，于是把线上的 heap 信息down 到本地并使用 pprof 时行分析，最后发现是 MinIO Client 占用了大量内存没有释放。
 
 ### 5. 为啥在本地没有复现？
-定位到问大概的问题，我们再回到本地，分析本地不能复现的原因。经过查太码，发现在本地运行模式和线上有一些差异。
+定位到问大概的问题，我们再回到本地，分析本地不能复现的原因。经过一遍一遍撸代码，发现在本地运行模式和线上有一些差异。
 
 ![](https://tva1.sinaimg.cn/large/e6c9d24egy1h5sf94dstyj20u00uh760.jpg)
 
-通过上图，我们能看到在本机模式下，程序并没有经过 MinIO Client，而是直连的 OSS，也就异致问题不能在本机进行复现。
+如果程序运行在本机模式下，程序并没有经过 MinIO Client，而是直连的 OSS，也就异致问题不能在本机进行复现。
 
-### 6. 最后，MinIO Client 为什么会导致 OOM？
+### 6. 最后，再来深究一下 MinIO Client 为什么会导致 OOM？
 如果使用 “minio client oom” 在 google 进行搜索，会发现已有相关记录而并非是个例。 大家遇到的问题和我们是一样的。
 
-OOM 其实是由 mc.PutObject() 这个函数触发， 具体的代码如下：
+OOM 其实是由 mc.PutObject() 这个函数触发，其第二个参数 size 如果传递 -1 则会引起 OOM。
 
-![[VTP5CEuCnh 1.jpg]]
-
-注意第二个参数 size，此处的值为 -1。
-
-Size 的作用是指定要上传的文件大小，MinIO 会根据不同的文件大小使用不同的上传策略。对于没有指定大不的文件（-1），MinIO Client 会认为该文件的大小为 5TB，并以 5G 的分片大小进行上传，每次会将该片的全部字节读入内存中，那如果如时操作多个文件，就会导致内存耗尽。
+参数 Size 的作用是指定要上传的文件大小，MinIO 会根据不同的文件大小使用不同的上传策略。对于没有指定大不的文件（-1），MinIO Client 会认为该文件的大小为 5TB，并以 5G 的分片大小进行上传，每次会将该片的全部字节读入内存中，那如果如时操作多个文件，就会导致内存耗尽。
 
 ```Go
 // PutObject creates an object in a bucket.
@@ -167,7 +164,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName, objectName string, r
    opts PutObjectOptions) (info UploadInfo, err error) {
 ```
 
-其实，PutObject 方法原型中的 Waring 有提醒我们，使用该方法时都需要传递文件尺寸，奈何一开始没有注意到！
+其实，PutObject 方法原型的注释中，Waring 有提醒我们，使用该方法时都需要传递文件尺寸，奈何一开始没有注意到，从而掉入到了坑里。
 
 ### 7. 解决方法
 找到了问题，那解决方案也很简单了。在 size 处传递正确的文件尺寸即可。
