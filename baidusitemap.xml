@@ -1,38 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.wewx.cn/2022/05/10/minio-gateway.html</loc>
-    <lastmod>2022-09-02</lastmod>
-  </url>
-  <url>
-    <loc>https://www.wewx.cn/2017/12/08/mySQL-partitioned-table-exploration.html</loc>
-    <lastmod>2022-09-02</lastmod>
-  </url>
-  <url>
-    <loc>https://www.wewx.cn/2022/05/30/office-docs-online-preview.html</loc>
-    <lastmod>2022-09-02</lastmod>
-  </url>
-  <url>
-    <loc>https://www.wewx.cn/2018/07/18/php-standard.html</loc>
-    <lastmod>2022-09-02</lastmod>
-  </url>
-  <url>
-    <loc>https://www.wewx.cn/2022/05/01/pkcs.html</loc>
-    <lastmod>2022-09-02</lastmod>
-  </url>
-  <url>
-    <loc>https://www.wewx.cn/2017/10/01/remember-a-fault-due-to-full-disk-inode.html</loc>
-    <lastmod>2022-09-02</lastmod>
-  </url>
-  <url>
-    <loc>https://www.wewx.cn/2022/05/03/rfid.html</loc>
-    <lastmod>2022-09-02</lastmod>
-  </url>
-  <url>
-    <loc>https://www.wewx.cn/2022/04/24/thoughts-from-the-barcode-scanner-manual.html</loc>
-    <lastmod>2022-09-02</lastmod>
-  </url>
-  <url>
     <loc>https://www.wewx.cn/2022/06/19/Portainer-of-QNAP-NA-advanced-gameplay.html</loc>
     <lastmod>2022-09-02</lastmod>
   </url>
@@ -77,7 +45,39 @@
     <lastmod>2022-09-02</lastmod>
   </url>
   <url>
-    <loc>https://www.wewx.cn/2022/08/12/minio-client-oom.html</loc>
+    <loc>https://www.wewx.cn/2022/09/02/minio-client-oom.html</loc>
+    <lastmod>2022-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2022/05/10/minio-gateway.html</loc>
+    <lastmod>2022-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2017/12/08/mySQL-partitioned-table-exploration.html</loc>
+    <lastmod>2022-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2022/05/30/office-docs-online-preview.html</loc>
+    <lastmod>2022-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2018/07/18/php-standard.html</loc>
+    <lastmod>2022-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2022/05/01/pkcs.html</loc>
+    <lastmod>2022-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2017/10/01/remember-a-fault-due-to-full-disk-inode.html</loc>
+    <lastmod>2022-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2022/05/03/rfid.html</loc>
+    <lastmod>2022-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://www.wewx.cn/2022/04/24/thoughts-from-the-barcode-scanner-manual.html</loc>
     <lastmod>2022-09-02</lastmod>
   </url>
   <url>
