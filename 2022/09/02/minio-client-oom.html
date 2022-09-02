@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="吹雨听风独立博客">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Fri Sep 02 2022 10:13:13 GMT+0000">2022-09-02</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+    </div>
+
+    <section class="pt-10 ">
+        <p><strong>背景</strong></p>
+<p>本周我们系统为了提升包含多文件的任务处理效率，将原来的串行化文件处理做了一优化，改成了协程并行。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wg.Add(<span class="built_in">len</span>(fileList))</span><br><span class="line"><span class="keyword">for</span> _, pdf := <span class="keyword">range</span> fileList &#123;</span><br><span class="line">    SplitPdfFile(f)</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line">wg.Wait()</span><br></pre></td></tr></table></figure>
+
+<p>SplitPdfFile 会调用 文件服务 进行 PDF 文件处理 （按页分割、合并页码）。</p>
+<p><strong>问题浮现</strong></p>
+<p>代码上线后，完了，功能完全不可用。原因是文件服务返回了 503 的错误响应。</p>
+<p><strong>问题排查与分析过程</strong></p>
+<h3 id="1-为什么会-503"><a href="#1-为什么会-503" class="headerlink" title="1. 为什么会 503"></a>1. 为什么会 503</h3><p>通过 rancher 查看，服务被重启了。由于是服务直接被 k8s 重启，程序并没有记录日志，而且我们也无法进入服务器从外部查看 k8s 日志，没有进一步的信息，但其他 API 并不到返回 503，仅仅是这一个 API，于是在当时盲猜了几个原因：</p>
+<ul>
+<li>是有没有 recovery 的 panic 导致程序异常了</li>
+<li>因为是文件处理，可能文件异常</li>
+</ul>
+<p>进一步分析与验证：</p>
+<ul>
+<li>程序在全局有注册 recovery，按道理所有的 painc 都会被捕获并销记录错误日志，但此情况下是没有任务日志被记录，故排除。</li>
+<li>对于第二点，把对应文件放在本地进行处理，程序完全正常，故排除。</li>
+</ul>
+<p>关注点再次回到容器上，容器为什么会重启，重启的原因是什么？但我们能用的仅有 rancher，通过 google 搜索神器，我们找到在服务的 yaml 文件的 State 节点下，会记录容器上次重启的原因：<strong>OOMKilled</strong></p>
+<h3 id="2-什么原因导致程序-OOM？"><a href="#2-什么原因导致程序-OOM？" class="headerlink" title="2. 什么原因导致程序 OOM？"></a>2. 什么原因导致程序 OOM？</h3><p>老实讲，没有想过这个不太大的文件服务会 OOM，通过观察发现程序初始启动时消耗的内存大约在 1300MB，请求部分 API 后会稳定在 1500MB 左右，而服务中的内存 limit 是 2Gi，按道理是足够的。</p>
+<p>另外还观察到，只要请求 PDF 文件处理 API，每次请求内点点用就会增加大约 0.6 ～ 1.5g，且不会释放，多来几次就被 kill 了。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h5sfaox8vtj20rk01kjrh.jpg"><br><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h5sfav9l6mj20ty01m74f.jpg"><br><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h5sfb1yf6aj20so01o3yn.jpg"></p>
+<p>这个现象 100%复现，也就是可以进一步确认是 PDF 文件处理会导致 OOM</p>
+<h3 id="3-会是不正确使用文件引发的-OOM-吗？"><a href="#3-会是不正确使用文件引发的-OOM-吗？" class="headerlink" title="3. 会是不正确使用文件引发的 OOM 吗？"></a>3. 会是不正确使用文件引发的 OOM 吗？</h3><p>这是一个 PDF 文件处理功能，那是否存在打开的文件忘关了、重复载入了文件的可能性？不排除这种可能性，于是花费了一些时间对系统的全部文件操作进行审查，顺路优化了一些代码：</p>
+<p>Before</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">f := os.Open(path)</span><br><span class="line"></span><br><span class="line">anotherFun(f)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">anotherFun</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// code</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">defer</span> f.Close()</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>After</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">f := os.Open(path)</span><br><span class="line"><span class="keyword">defer</span> f.Close()</span><br><span class="line"></span><br><span class="line">anotherFun(f)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">anotherFun</span><span class="params">(f *os.File)</span></span> &#123;</span><br><span class="line">     <span class="comment">// code</span></span><br><span class="line">     </span><br><span class="line">     <span class="keyword">defer</span> f.Close()</span><br><span class="line">     </span><br><span class="line">     <span class="comment">// code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Before</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> _, v := <span class="keyword">range</span> fileList &#123;</span><br><span class="line">   f := os.Open(path)</span><br><span class="line">   <span class="keyword">defer</span> f.Close()</span><br><span class="line">   </span><br><span class="line">   <span class="comment">// code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>After</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> _, v := <span class="keyword">range</span> fileList &#123;</span><br><span class="line">    f := os.Open(path)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// code</span></span><br><span class="line">    _ = f.Close()</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>仔细排查文件操作之后，所有文件使用都已规范、文件关闭时机都很合理、也不存在重复读入的问题，但在线上问题依旧！</p>
+<h3 id="4-上神器-pprof"><a href="#4-上神器-pprof" class="headerlink" title="4. 上神器 pprof"></a>4. 上神器 pprof</h3><p>借助pprof，我们观察到在本机运行，即使是 50 个并发循环 10 次这样量级内存占用依然是稳定的！并不会像服务器上一样出现 OOM 甚至崩溃的情况。</p>
+<p>程序启动</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h5sfa7zki5j21800j0n27.jpg"></p>
+<p>并发请求后</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h5sfagqbglj215o0is76u.jpg"></p>
+<p>由些基本可以确定问题仅出现在线上环境（test-demo），于是把线上的 heap 信息down 到本地分析，最终发现是 MinIO Client 占用了大量内存没有释放。</p>
+<h3 id="5-为啥在本地没有复现？"><a href="#5-为啥在本地没有复现？" class="headerlink" title="5. 为啥在本地没有复现？"></a>5. 为啥在本地没有复现？</h3><p>定位到问大概的问题，我们再回到本地，分析本地不能复现的原因。经过查太码，发现在本地运行模式和线上有一些差异。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h5sf94dstyj20u00uh760.jpg"></p>
+<p>通过上图，我们能看到在本机模式下，程序并没有经过 MinIO Client，而是直连的 OSS，也就异致问题不能在本机进行复现。</p>
+<h3 id="6-最后，MinIO-Client-为什么会导致-OOM？"><a href="#6-最后，MinIO-Client-为什么会导致-OOM？" class="headerlink" title="6. 最后，MinIO Client 为什么会导致 OOM？"></a>6. 最后，MinIO Client 为什么会导致 OOM？</h3><p>如果使用 “minio client oom” 在 google 进行搜索，会发现已有相关记录而并非是个例。 大家遇到的问题和我们是一样的。</p>
+<p>OOM 其实是由 mc.PutObject() 这个函数触发， 具体的代码如下：</p>
+<p>![[VTP5CEuCnh 1.jpg]]</p>
+<p>注意第二个参数 size，此处的值为 -1。</p>
+<p>Size 的作用是指定要上传的文件大小，MinIO 会根据不同的文件大小使用不同的上传策略。对于没有指定大不的文件（-1），MinIO Client 会认为该文件的大小为 5TB，并以 5G 的分片大小进行上传，每次会将该片的全部字节读入内存中，那如果如时操作多个文件，就会导致内存耗尽。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PutObject creates an object in a bucket.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// You must have WRITE permissions on a bucket to create an object.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  - For size smaller than 16MiB PutObject automatically does a</span></span><br><span class="line"><span class="comment">//    single atomic PUT operation.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  - For size larger than 16MiB PutObject automatically does a</span></span><br><span class="line"><span class="comment">//    multipart upload operation.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  - For size input as -1 PutObject does a multipart Put operation</span></span><br><span class="line"><span class="comment">//    until input stream reaches EOF. Maximum object size that can</span></span><br><span class="line"><span class="comment">//    be uploaded through this operation will be 5TiB.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//    WARNING: Passing down &#x27;-1&#x27; will use memory and these cannot</span></span><br><span class="line"><span class="comment">//    be reused for best outcomes for PutObject(), pass the size always.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> Upon errors during upload multipart operation is entirely aborted.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Client)</span></span> PutObject(ctx context.Context, bucketName, objectName <span class="type">string</span>, reader io.Reader, objectSize <span class="type">int64</span>,</span><br><span class="line">   opts PutObjectOptions) (info UploadInfo, err <span class="type">error</span>) &#123;</span><br></pre></td></tr></table></figure>
+
+<p>其实，PutObject 方法原型中的 Waring 有提醒我们，使用该方法时都需要传递文件尺寸，奈何一开始没有注意到！</p>
+<h3 id="7-解决方法"><a href="#7-解决方法" class="headerlink" title="7. 解决方法"></a>7. 解决方法</h3><p>找到了问题，那解决方案也很简单了。在 size 处传递正确的文件尺寸即可。</p>
+<h3 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. 总结</h3><ul>
+<li>从业务上考虑我们要设置多大的文件</li>
+<li>根据文件 Size 上限、最多支持 10, 000 part 、并发度控制，容器内存大小等因素来指定 part 大小</li>
+<li>minio 需要根据 part size 的大小来确定最高的并发度来防止容器 OOM，并且需要控制到 minio 驱动层，而不是业务层</li>
+<li>虽然 Minio S3 接口不支持流式，但支持分片，所以上传大文件的时候仍然需要用流式，而不是把大文件都加载到内存才开始上传到 Minio</li>
+</ul>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2022
+
+            <span>吹雨听风.</span>
+
+            <span>
+                本站由 <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+                    强力驱动
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/links"
+                       class="whitespace-nowrap text-gray-500 "> 链接 </a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/atom.xml" title="RSS" target="_blank" rel="noopener">RSS</a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/sitemap.xml" title="网站地图" target="_blank" rel="noopener">网站地图</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)" target="_blank" rel="noopener">署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+
+
+
+    </div>
+</div>
+
+</body>
+</html>
