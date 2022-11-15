@@ -1,0 +1,9 @@
+figure .gutter {
+    display: none !important;
+}
+figure table {
+    width: 100% !important;
+}
+figure .code {
+    padding: 8px;
+}
