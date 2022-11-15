@@ -4,6 +4,7 @@ figure .gutter {
 figure table {
     width: 100% !important;
 }
-figure .code {
-    padding: 8px;
+figure .code pre {
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
