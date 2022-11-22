@@ -133,7 +133,7 @@ func TestAsyncTaskRunner(t *testing.T) {
 再次运行测试，结果如下：
 
 ```bash
-    timeout_context_test.go:72: goroutines:  7
+    timeout_context_test.go:72: goroutines:  2
 --- PASS: TestAsyncTaskRunner (3.00s)
 PASS
 ```
