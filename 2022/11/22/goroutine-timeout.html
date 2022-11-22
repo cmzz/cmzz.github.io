@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:description" content="吹雨听风独立博客">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        如何确保一个协程在超时后顺利退出 - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        如何确保一个协程在超时后顺利退出
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Tue Nov 22 2022 00:00:00 GMT+0000">2022-11-22</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+    <div class="mt-2">
+        <span>标签：</span>
+        
+            <a class="" href="/tags/#golang"
+               title="golang">golang</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#编程"
+               title="编程">编程</a>
+            
+        
+    </div>
+
+    </div>
+
+    <section class="pt-10 ">
+        <p>Go 中的协程由于其非常易于使用的特性，在实际的使用中被广泛的应用于各个场中心。在有些场的使用可能并不是很恰当，甚至在特定的场景下定带来其他的问题。</p>
+<h2 id="一个场景"><a href="#一个场景" class="headerlink" title="一个场景"></a>一个场景</h2><p>在 Go 中，通过 crontab 来调度一个任务 AsyncTask() 来处理一些异步工作，调度器每分钟调度 1 次。</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>如果 AsyncTask 的执行时间，超过了调度间隔，而恰好，AsyncTask 的处理又比较占用系统资源，那么就会有大问题。</p>
+<p>资源的占用会进一步延长 AsyncTask 的处理是间，如此更形成了恶性循环，直至耗尽全部资源。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h8doqt4xpuj30lp0avaac.jpg"></p>
+<h2 id="超时结束"><a href="#超时结束" class="headerlink" title="超时结束"></a>超时结束</h2><p>提到超时，我们首先一定会想到 <code>context.WithTimeout</code>，它提供了简单的方法，可以轻而易举的实现超时功能，于下，我们可以写下如下的代码。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">AsyncTask</span><span class="params">()</span></span> &#123;  </span><br><span class="line">   ctx, cancel := context.WithTimeout(context.Background(), time.Second*<span class="number">3</span>)  </span><br><span class="line">   <span class="keyword">defer</span> cancel()  </span><br><span class="line">  </span><br><span class="line">   <span class="keyword">select</span> &#123;  </span><br><span class="line">   <span class="keyword">case</span> &lt;-ctx.Done():  </span><br><span class="line">      fmt.Println(<span class="string">&quot;AsyncTask has done&quot;</span>)  </span><br><span class="line">   <span class="keyword">default</span>:  </span><br><span class="line">      fmt.Println(<span class="string">&quot;AsyncTask is running&quot;</span>)  </span><br><span class="line">      time.Sleep(time.Second * <span class="number">3</span>)  </span><br><span class="line">      <span class="keyword">return</span>  </span><br><span class="line">   &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>确实，这是一个超时的任务处理器，且考虑了两个方面：</p>
+<ul>
+<li>当 AsyncTask 任务提前处理完成时，退出</li>
+<li>当 AsyncTask 处理完，但时间超过了 1 分钟时，退出</li>
+</ul>
+<p>看似能很完美的运行， AsyncTask 运行时间小于 1 分钟，没有问题。</p>
+<p>但是回到我们上面的问是，当 AsyncTask 运行时间远远超过 1 分钟时，我们前面提到的问是还是存在的，前面的任务运行没有结束，后面的任务又到来了。</p>
+<h2 id="超时后协程会退出吗"><a href="#超时后协程会退出吗" class="headerlink" title="超时后协程会退出吗"></a>超时后协程会退出吗</h2><p>我们可以运行一个 test，在结束时打印一下当前进程空间中的所有协程数量以判断协程是否正确退出：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestTimeoutContextWrapper</span><span class="params">(t *testing.T)</span></span> &#123;  </span><br><span class="line">   t.Helper()  </span><br><span class="line">   <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++ &#123;  </span><br><span class="line">      <span class="keyword">go</span> AsyncTask()  </span><br><span class="line">   &#125;  </span><br><span class="line">   time.Sleep(time.Second * <span class="number">4</span>)  </span><br><span class="line">   t.Log(runtime.NumGoroutine())  </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>将 AsyncTask 使用协程方式，异步的运行 1000 次，AsyncTask 内部会睡眠 3s 以模拟实际的业务处理耗时。主程序睡眠 4s，最后再打印所有的协程数量。</p>
+<p>运行，并等待 4 秒之后，得到如下的输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    timeout_context_test.go:32: goroutines:  2</span><br><span class="line">--- PASS: TestTimeoutContextWrapper (4.00s)</span><br><span class="line">PASS</span><br></pre></td></tr></table></figure>
+
+<p>证明在超时 3s 后，所以创建的协程都已正确退出。</p>
+<p>那，如果 AsyncTask() 运行时间超过 3s 呢？假设以阻塞 IO 方式运行了 10s，我再次来模拟一下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    timeout_context_test.go:32: goroutines:  1002</span><br><span class="line">--- PASS: TestTimeoutContextWrapper (4.00s)</span><br><span class="line">PASS</span><br></pre></td></tr></table></figure>
+
+<p>测试结果证明了我们一开始的问题：在同步阻塞 IO 情况下，select 循环也需要至少等待一次主业务逻辑执行完成（10s），在下次循环时才会检测到超时，然后协程退出。</p>
+<h2 id="如何在超时后直接退出"><a href="#如何在超时后直接退出" class="headerlink" title="如何在超时后直接退出"></a>如何在超时后直接退出</h2><p>我们试试异步非阻塞 IO。将上面的测试代码稍微改一改，把同步 IO 替换成异步 IO 的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">AsyncTask2</span><span class="params">(c <span class="keyword">chan</span> <span class="type">bool</span>)</span></span> &#123;  </span><br><span class="line">   ctx, cancel := context.WithTimeout(context.Background(), time.Second*<span class="number">10</span>)  </span><br><span class="line">   <span class="keyword">defer</span> cancel()  </span><br><span class="line">   <span class="keyword">select</span> &#123;  </span><br><span class="line">   <span class="keyword">case</span> &lt;-ctx.Done():  </span><br><span class="line">      fmt.Println(<span class="string">&quot;AsyncTask2 has done&quot;</span>)  </span><br><span class="line">      c &lt;- <span class="literal">true</span>  </span><br><span class="line">   <span class="keyword">default</span>:  </span><br><span class="line">      fmt.Println(<span class="string">&quot;AsyncTask2 is running&quot;</span>)  </span><br><span class="line">   &#125;&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">AsyncTaskRunner</span><span class="params">()</span></span> &#123;  </span><br><span class="line">   <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;  </span><br><span class="line">      fmt.Println(<span class="string">&quot;AsyncTaskRunner has done&quot;</span>)  </span><br><span class="line">   &#125;()  </span><br><span class="line">   done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">bool</span>, <span class="number">1</span>)  </span><br><span class="line">   <span class="keyword">go</span> AsyncTask2(done)  </span><br><span class="line">  </span><br><span class="line">   <span class="keyword">select</span> &#123;  </span><br><span class="line">   <span class="keyword">case</span> &lt;-done:  </span><br><span class="line">      fmt.Println(<span class="string">&quot;AsyncTask2 done&quot;</span>)  </span><br><span class="line">   <span class="keyword">case</span> &lt;-time.After(time.Second * <span class="number">2</span>):  </span><br><span class="line">      fmt.Println(<span class="string">&quot;AsyncTaskRunner timeout&quot;</span>)  </span><br><span class="line">      <span class="keyword">return</span>  </span><br><span class="line">   &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestAsyncTaskRunner</span><span class="params">(t *testing.T)</span></span> &#123;  </span><br><span class="line">   t.Helper()  </span><br><span class="line">   <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;  </span><br><span class="line">      <span class="keyword">go</span> AsyncTaskRunner()  </span><br><span class="line">   &#125;  </span><br><span class="line">   time.Sleep(time.Second * <span class="number">3</span>)  </span><br><span class="line">   t.Log(<span class="string">&quot;goroutines: &quot;</span>, runtime.NumGoroutine())  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再次运行测试，结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    timeout_context_test.go:72: goroutines:  7</span><br><span class="line">--- PASS: TestAsyncTaskRunner (3.00s)</span><br><span class="line">PASS</span><br></pre></td></tr></table></figure>
+
+<p>没错，使用异步 IO，在 runner 结束之后，AsyncTask2 也结束了。</p>
+<h2 id="通过业务逻辑保证，以解决问题"><a href="#通过业务逻辑保证，以解决问题" class="headerlink" title="通过业务逻辑保证，以解决问题"></a>通过业务逻辑保证，以解决问题</h2><p>由于 go 的协程没有主协程&#x2F;子协程一说，协程一旦创建之后都会平等的接受调度与运行。因此我们并不能直接的结束调一个已创建的子协程。</p>
+<p>于是根据上面的异步的思路，进一步封装了一个如下的异步任务限时处理器：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> TimeoutTaskHandler <span class="keyword">interface</span> &#123;  </span><br><span class="line">   HandleTimeoutTask(ctx context.Context) <span class="type">bool</span>  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="comment">// TimeoutContextWrapper 一个简单的超时处理器  </span></span><br><span class="line"><span class="comment">// 处理器会在指定的最大时间内执行任务  </span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TimeoutContextWrapper</span><span class="params">(ctx context.Context, timeoutSec <span class="type">int</span>, handler TimeoutTaskHandler)</span></span> &#123;  </span><br><span class="line">   <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;  </span><br><span class="line">      <span class="keyword">if</span> err := <span class="built_in">recover</span>(); err != <span class="literal">nil</span> &#123;  </span><br><span class="line">         log.Error(fmt.Errorf(<span class="string">&quot;timeout context wrapper panic: %s&quot;</span>, err))  </span><br><span class="line">      &#125;   </span><br><span class="line">   &#125;()  </span><br><span class="line">   </span><br><span class="line">   ctx, cancel := context.WithTimeout(ctx, time.Duration(timeoutSec)*time.Second)  </span><br><span class="line">   <span class="keyword">defer</span> cancel()  </span><br><span class="line">  </span><br><span class="line">   <span class="keyword">var</span> exit = <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">bool</span>, <span class="number">1</span>)  </span><br><span class="line">   <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;  </span><br><span class="line">      <span class="keyword">for</span> &#123;  </span><br><span class="line">         <span class="keyword">select</span> &#123;  </span><br><span class="line">         <span class="keyword">case</span> &lt;-ctx.Done():  </span><br><span class="line">            exit &lt;- <span class="literal">true</span>  </span><br><span class="line">            <span class="keyword">return</span>  </span><br><span class="line">  </span><br><span class="line">         <span class="keyword">default</span>:  </span><br><span class="line">            <span class="comment">// handler 的运行时间可能会超过 timeoutSec            </span></span><br><span class="line">            <span class="comment">// 所以需要通在后面配置一个超时时间，超过 timeoutSec 就退出  </span></span><br><span class="line">            haveDone := handler.HandleTimeoutTask(ctx)  </span><br><span class="line">            <span class="keyword">if</span> haveDone &#123;  </span><br><span class="line">               exit &lt;- <span class="literal">true</span>  </span><br><span class="line">               <span class="keyword">return</span>  </span><br><span class="line">            &#125;  </span><br><span class="line">         &#125;      </span><br><span class="line">	 &#125;   </span><br><span class="line">   &#125;()  </span><br><span class="line">   </span><br><span class="line">   <span class="comment">// 开始一个计时器  </span></span><br><span class="line">   <span class="comment">// 超过 timeoutSec 或者 未到 timeoutSec 但是 handler 决定退出时，结束本次处理周期  </span></span><br><span class="line">   <span class="keyword">select</span> &#123;  </span><br><span class="line">   <span class="keyword">case</span> &lt;-exit:  </span><br><span class="line">      <span class="keyword">return</span>  </span><br><span class="line">   <span class="keyword">case</span> &lt;-time.After(time.Duration(timeoutSec) * time.Second):  </span><br><span class="line">      <span class="keyword">return</span>  </span><br><span class="line">   &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如上代码其内部的原理和前面模拟的测试代码大同小异。要想让上面的代码按预期方式正常运行，有个逻辑需要在业务层面来保证：</p>
+<p><code>HandleTimeoutTask()</code> 接口的实现，用来处理一个最小单位的任务，并且会在每次循环中调用。这就意味着在实现内部需要有机制来避免死循环且保证“向前”推进任务进程，同时处理时间不能超过整个调度周期的时间。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h8dov0bwxpj30lp0avq33.jpg"></p>
+<p>此代码目前在线上运行良好，顺利的解决了一开始提出的问题。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>无法直接通过 kill 机制结束一个已创建的协程</li>
+<li>建议协程中要有保障退出的机制</li>
+<li>建议使用异部 IO，如果写成处于阻塞中，也是需要等至结束之后才能退出</li>
+<li>避免在协程中使用死循环（或要能退出）</li>
+<li>如果需要使用循环来处理业务，需要考虑极端情况，推荐将耗时的长任务拆分为多步执行</li>
+</ul>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2022
+
+            <span>吹雨听风.</span>
+
+            <span>
+                本站由 <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+                    强力驱动
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/links"
+                       class="whitespace-nowrap text-gray-500 "> 链接 </a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/atom.xml" title="RSS" target="_blank" rel="noopener">RSS</a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/sitemap.xml" title="网站地图" target="_blank" rel="noopener">网站地图</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)" target="_blank" rel="noopener">署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+
+
+
+    </div>
+</div>
+
+</body>
+</html>
