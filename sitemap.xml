@@ -2,6 +2,60 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.wewx.cn/2023/01/06/payment-system-desigin-of-refund.html</loc>
+    
+    <lastmod>2023-01-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2018/07/18/php-standard.html</loc>
+    
+    <lastmod>2023-01-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2022/05/01/pkcs.html</loc>
+    
+    <lastmod>2023-01-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2017/10/01/remember-a-fault-due-to-full-disk-inode.html</loc>
+    
+    <lastmod>2023-01-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2022/05/03/rfid.html</loc>
+    
+    <lastmod>2023-01-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2022/04/24/thoughts-from-the-barcode-scanner-manual.html</loc>
+    
+    <lastmod>2023-01-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.wewx.cn/about/index.html</loc>
     
     <lastmod>2023-01-08</lastmod>
@@ -174,60 +228,6 @@
   
   <url>
     <loc>https://www.wewx.cn/2022/05/30/office-docs-online-preview.html</loc>
-    
-    <lastmod>2023-01-08</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/2023/01/06/payment-system-desigin-of-refund.html</loc>
-    
-    <lastmod>2023-01-08</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/2018/07/18/php-standard.html</loc>
-    
-    <lastmod>2023-01-08</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/2022/05/01/pkcs.html</loc>
-    
-    <lastmod>2023-01-08</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/2017/10/01/remember-a-fault-due-to-full-disk-inode.html</loc>
-    
-    <lastmod>2023-01-08</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/2022/05/03/rfid.html</loc>
-    
-    <lastmod>2023-01-08</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/2022/04/24/thoughts-from-the-barcode-scanner-manual.html</loc>
     
     <lastmod>2023-01-08</lastmod>
     
