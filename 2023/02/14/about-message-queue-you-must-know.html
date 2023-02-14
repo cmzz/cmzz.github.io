@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="website">
+
+<meta name="description" content="在现代软件系统中，消息队列可谓是非常基础的软件，尤其在异步化的微服务架构中。消息队列可确保组件之间通信的可靠和稳定，同时使消息在系统全局内部得到监控和治理。本文对消息队列产品作了些简单的对比，希望对您有用。">
+<meta property="og:description" content="在现代软件系统中，消息队列可谓是非常基础的软件，尤其在异步化的微服务架构中。消息队列可确保组件之间通信的可靠和稳定，同时使消息在系统全局内部得到监控和治理。本文对消息队列产品作了些简单的对比，希望对您有用。">
+
+
+<meta name="keyword" content="消息队列">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        消息队列：RabbitMQ vs Kafka vs Redis vs NSQ vs Pulsar - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        消息队列：RabbitMQ vs Kafka vs Redis vs NSQ vs Pulsar
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Tue Feb 14 2023 02:36:48 GMT+0000">2023-02-14</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+    <div class="mt-2">
+        <span>标签：</span>
+        
+            <a class="" href="/tags/#技术"
+               title="技术">技术</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#消息队列"
+               title="消息队列">消息队列</a>
+            
+        
+    </div>
+
+    </div>
+
+    <section class="pt-10 ">
+        <p>在现代软件系统中，消息队列可谓是非常基础的软件，尤其在异步化的微服务架构中。消息队列可确保 用服务之间通信的可靠和稳定，同时使消息在系统全局内部得到监控和治理。</p>
+<p>市面有许多消息队列产品，如成熟的 RabbitMQ，还有后期之秀如 Pulsar 和 NSQ。这些产品的功、特点、支持的数据规模各有不同，本文将对一些主流的消息产品进行基本的对比。</p>
+<h2 id="消息队列使用场景"><a href="#消息队列使用场景" class="headerlink" title="消息队列使用场景"></a>消息队列使用场景</h2><p>消息队列的应用非常广泛，如在分布式系统中承担着消息通信的任务，提供异步化、可靠的消息传递服务; 在物联网系统中承担消息下发与数据汇集的工作， 是物联网平台中不可或缺的组成部份等。</p>
+<h3 id="通信服务"><a href="#通信服务" class="headerlink" title="通信服务"></a>通信服务</h3><p>在微服务系统或分布式系统中，服务与服务之间有两种比较常见的通信方式：同步通信与异步通信。</p>
+<p>在同步通信中，服务的调用方在发请调用后，面要等待服务提供方的响应，常在 http &#x2F; rest 或 rcp 协议上运行。相反的，在异步的通信中，调用方将在消息发出后不必等待服务提供方的响应，此时通常面要使用消息队列产品来进行消息的治理。</p>
+<p>异步通信相比于同步通信有许多的优点。</p>
+<p>首先，异步通信是非阻塞的。调用方和服务方并不会直接的交互，调用方在消息发送成功后通信就完成了，不会等待其他服务对消息的处理结果，因此可以优化数据链路和数据流。</p>
+<p>其次，提供更好的灵活性和扩展性。消息队例的引入，降低了系统组件之间的耦合，组件和组件之间的灵活性将大大提升，同样，由于组件之间不再直接进行通信，扩展性与伸缩性也会更好。</p>
+<p>第三，提高更好的可用性。服务的调用方和服务提供方双方之间不直接联系，而是调用方将请求都发送给消息队列。利用消息队列对原本相互依赖的组件和系统时行分离，可以极大的提升容错的能力，即使在服务提供方故障时，调用方依然可以继续和队列进行交互，从而保证或局部保证了系统的可用性。</p>
+<h3 id="消息服务"><a href="#消息服务" class="headerlink" title="消息服务"></a>消息服务</h3><p>在即时通讯 (IM) 系统中，消息队列了常被用于以下场景：</p>
+<ol>
+<li>异步处理消息：IM 系统的消息处理需要耗时，例如图像转换，语音识别，文本分析等。消息队列可以用来缓存这些任务，使它们在后台独立的线程中处理，避免阻塞用户请求，提高系统效率。</li>
+<li>解耦消息处理组件：IM 系统中的多个组件之间通信通常需要耗时，消息队列可以被用来解耦这些组件，避免相互影响，提高系统的稳定性。</li>
+<li>消息持久化：消息队列可以存储消息，即使在系统宕机或其他异常情况下，消息也不会丢失。这对于 IM 系统中的消息通知等重要信息是非常有价值的。</li>
+</ol>
+<p>消息队列为 IM 系统提供了一个高效的消息管理机制，帮助 IM 系统提高效率，提高稳定性，保证消息的可靠性。</p>
+<h3 id="物联网"><a href="#物联网" class="headerlink" title="物联网"></a>物联网</h3><p>消息列队同样在物联网系统中被用来解决各种问题：</p>
+<ol>
+<li>解耦系统组件：物联网系统通常包括大量的组件，例如传感器，设备，云端服务器等。消息队列可以被用来解耦这些组件，避免相互依赖导致的系统停滞。</li>
+<li>实现异步消息处理：物联网系统中的消息处理通常需要耗时，消息队列可以用来缓存这些任务，使它们在后台独立的线程中处理，避免阻塞其他任务，提高系统效率。</li>
+<li>保证数据一致性：在物联网系统中，数据的传输通常需要处理大量的数据，消息队列可以用来缓存数据，确保数据的一致性，防止数据丢失或出错。</li>
+<li>支持流量削峰：物联网系统中的数据流量可能在短时间内暴增，消息队列可以用来缓存数据，避免系统因数据流量过大而崩溃。</li>
+</ol>
+<p>总的来说，消息队列在现在系统中有着不可或缺的地位，常用于实现异步通讯、应用解藕、削峰平谷等功能。</p>
+<h2 id="消息对列常见协议"><a href="#消息对列常见协议" class="headerlink" title="消息对列常见协议"></a>消息对列常见协议</h2><h3 id="JMS"><a href="#JMS" class="headerlink" title="JMS"></a>JMS</h3><p>Java Message Service的缩写，即Java消息服务。当然，JMS是与语言无关的协议标准，只要遵循该协议2个组件即可时行消息通信。</p>
+<h3 id="STOMP"><a href="#STOMP" class="headerlink" title="STOMP"></a>STOMP</h3><p>即<strong>流文本定向消息协议</strong>（Streaming Text Orientated Messaging Protocal），简单(流)文本定向消息协议，它提供了一个可互操作的连接格式，允许STOMP客户端与任意STOMP消息代理（Broker）进行交互。STOMP协议由于设计简单，易于开发客户端，因此在多种语言和多种平台上得到广泛地应用。</p>
+<p>代表产品为：ActiveMQ、Apollo</p>
+<h3 id="AMQP"><a href="#AMQP" class="headerlink" title="AMQP"></a>AMQP</h3><p>即<strong>高级消息队列协议</strong>（Advanced Message Queuing Protocol）。</p>
+<p>一个提供统一消息服务的应用层标准高级消息队列协议，与 HTTP 一样，AMQP 也是应用层协议的一个开放标准，为面向消息的中间件设计。</p>
+<p>基于此协议的客户端与消息中间件可传递消息，并不受客户端&#x2F;中间件不同产品，不同的开发语言等条件的限制。</p>
+<p>RabbitMQ 是 AMQP 消息队列最有名的开源实现。</p>
+<h3 id="MQTT"><a href="#MQTT" class="headerlink" title="MQTT"></a>MQTT</h3><p>即<strong>消息队列遥测传输</strong>（Message Queuing Telemetry Transport）。由IBM开发，现在被广泛用于物联网场景。因为他的特点就是轻量，简单，开放和易于实现。所以它常用于很多计算能力有限、带宽低、网络不可靠的远程通信应用场景。</p>
+<h2 id="产品简单对比"><a href="#产品简单对比" class="headerlink" title="产品简单对比"></a>产品简单对比</h2><h3 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h3><p>我们常把Redis作为内存数据库来用，内存数据存储是它的核心功能，当然也用作高性的消息代理。不过 Redis 与其他消息代理有点不同。</p>
+<p>需要特别注意的是，Redis 没有持久性，而是将其内存转储到磁盘&#x2F;数据库中。它也非常适合实时数据处理。</p>
+<p>自从 Redis 5.0 引入了 pub-sub 功能之后，消息对队得到了提升，也能很好的支付一对多的订阅场景。</p>
+<h3 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h3><p>RabbitMQ 于 2007 年发布，是最早创建的通用消息代理之一，它是开源的 AMQP 协议的代表。现如今支持 RabbitMQ 还支持 XMPP、SMTP、STOMP 等众多的其他消息协议，同时 RabbitMQ 还支持复杂的路由逻辑，或许这正是它持续火爆的原因。</p>
+<p>在客户端方面，RabbitMQ 支持所有主流编程语言，包括 Python、Java、.NET、PHP、Ruby、JavaScript、Go、Swift 等。</p>
+<h3 id="Kafka"><a href="#Kafka" class="headerlink" title="Kafka"></a>Kafka</h3><p>Kafka 由 Linkedin 于 2011 年创建，是一个分布式、分区的、多副本的、多生产者、多订阅者，基于 zookeeper 协调的分布式消息系统。Kafka 优势是支持高吞吐量、低延迟、并且支持持久化存储。同时也拥有众多语言的客户端实现。</p>
+<h3 id="NSQ"><a href="#NSQ" class="headerlink" title="NSQ"></a>NSQ</h3><p>NSQ 是 Go 语言编写的一个开源的实时分布式内存消息队列，其性能十分优异。是近年比较流行的消息队列产品。NSQ提倡分布式和分散的拓扑结构，没有单点故障，支持容错和高可用性，并提供可靠的消息交付保证，同时支持横向扩展，没有任何集中式代理，并且部署也非常的简单。</p>
+<h3 id="Pulsar"><a href="#Pulsar" class="headerlink" title="Pulsar"></a>Pulsar</h3><p>Pulsar是一个高性能，分布式消息系统，它具有高吞吐量，低延迟，高可用性，支持多租户和多语言的特点。Pulsar还提供了一些附加功能，如存储分区，数据持久性，数据备份等。最初由 Yahoo 开发，目前由 Apache 软件基金会管理。</p>
+<h2 id="选择合适的消息队列产品"><a href="#选择合适的消息队列产品" class="headerlink" title="选择合适的消息队列产品"></a>选择合适的消息队列产品</h2><p>前面介绍了几个主流消息对队产品的特性。其中如 Redis &#x2F; RabbitMQ &#x2F; Kafaka 等产品目前处于如日中天的发展阶段，也能被各大云厂商原生支持，但正如前面所描述的，它们在实现方式上却有着天壤之别，这里对于消息队列产品的选择给出一些通用性的建议：</p>
+<h3 id="简单应用、短消息、临时：-Redis"><a href="#简单应用、短消息、临时：-Redis" class="headerlink" title="简单应用、短消息、临时： Redis"></a>简单应用、短消息、临时： Redis</h3><p>Redis 的内存数据库几乎非常适合不需要持久性的短消息用例。因为它提供了极快的服务和内存中功能，Redis 是持久性不是那么重要并且您可以容忍一些丢失的短期保留消息的理想选择。</p>
+<p>Redis 5.0 之后的版本中，增强了 Pub &#x2F; Sub 能力（Stream），如果有简单的一对多场景也可以作为备选。</p>
+<h3 id="汇集海量数据与处理：Kafaka"><a href="#汇集海量数据与处理：Kafaka" class="headerlink" title="汇集海量数据与处理：Kafaka"></a>汇集海量数据与处理：Kafaka</h3><p>Kafka是一个高吞吐量、可靠性、分布式、灵活性和易于扩展的消息系统，专为长时间存储大量数据而构建。主要应用于数据流管理、日志处理、应用间通信和消息队列等场景。</p>
+<h3 id="消息路由复杂：RabbitMQ"><a href="#消息路由复杂：RabbitMQ" class="headerlink" title="消息路由复杂：RabbitMQ"></a>消息路由复杂：RabbitMQ</h3><p>RabbitMQ 作为老牌的、成熟的消息代理，高可用性、易于扩展、强大的路由功能和多种协议支持的特点，周时能够很好的支持复杂路由配置。主要应用于分布式系统的异步通信、应用间消息传递和任务队列等场景。</p>
+<h3 id="需要利用延时特性：-RabbitMQ-x2F-NSQ-x2F-Pulsar-x2F-ActiveMQ"><a href="#需要利用延时特性：-RabbitMQ-x2F-NSQ-x2F-Pulsar-x2F-ActiveMQ" class="headerlink" title="需要利用延时特性： RabbitMQ &#x2F; NSQ &#x2F; Pulsar &#x2F; ActiveMQ"></a>需要利用延时特性： RabbitMQ &#x2F; NSQ &#x2F; Pulsar &#x2F; ActiveMQ</h3><p>延迟队列可让新消息传递操作推迟特定的时常，在等待期间消费者不可见。在实际的使用中常基于此特性实现延迟的重复推送以保证投递的可靠性。如果您的应用有此需求可以考虑这几款支持延时特性的产品。</p>
+<h3 id="需要简化部署：NSQ-x2F-Redis"><a href="#需要简化部署：NSQ-x2F-Redis" class="headerlink" title="需要简化部署：NSQ &#x2F; Redis"></a>需要简化部署：NSQ &#x2F; Redis</h3><p>Redis 作为最基础的产品，已被特大云厂商普遍支持，即使需要私有部署也非常的容易。</p>
+<p>而 NSQ 作为一款近几年兴起的，使用 Go 语言编写的一个开源产品，除了支持良好的性能，还非常的易于配置和部署，并且内置了管理界面。</p>
+<h2 id="消息队列产品技术词汇"><a href="#消息队列产品技术词汇" class="headerlink" title="消息队列产品技术词汇"></a>消息队列产品技术词汇</h2><p>同样，在最后整理了与消息队列上关的技术名词和概念，如有需要可自行进一步深入了解。注意：这里的名词混合了各产品的名词，特定的产品可能只包含下面部份名词也指代的角色。</p>
+<ul>
+<li>Broker：代理，消息队列系统的核心部分，负责维护队列并转发、管理消息，通种表示消息队列服务的实体。</li>
+<li>Message：消息，消息队列中存储的单元数据。</li>
+<li>Producer &#x2F; Publisher：生产者，负责生成并发送消息到消息队列。</li>
+<li>Consumer &#x2F; Subscriber：消费者，负责从消息队列中接收并处理消息。</li>
+<li>Queue：队列，消息存储的容器，消息队列系统可以管理多个队列。</li>
+<li>ACK：确认，消费者在处理完消息后向代理发送确认，代表该消息已经被成功处理。</li>
+<li>Channel：信道，指消息代理中的虚拟连接。它在应用程序和消息代理之间提供了一条用于发送和接收消息的通信路径。</li>
+<li>Topic：主题，消息的类别，生产者向某个主题发送消息，消费者从某个主题接收消息。</li>
+<li>Durable：持久性，消息队列支持持久性消息，即消息不会因系统故障丢失。</li>
+<li>Load Balancing：负载均衡，消息队列系统支持负载均衡，可以将消息均衡地分配给多个消费者。</li>
+<li>Routing：路由，负责将消息队列中的消息分发与路由。根据消息的特征，选择相应的路由规则，将消息分发&#x2F;分配给对应的消费者。</li>
+<li>Pub&#x2F;Sub：发布&#x2F;订阅，消息队列支持发布&#x2F;订阅模型，生产者向主题发布消息，</li>
+<li>Delay Message：延时消息，消息队列中存储的消息在一定的时间后才能被消费者消费。</li>
+<li>Dead Message：死信，超时未消费的消息或是超过最大重试次数后，依然无法消费的消息。</li>
+<li>Dead-Letter-Queue：死信对列，用于处理无法被正常消费的消息队列。</li>
+<li>Exchange：RabbitMQ 的路由代理。将消息路由到一个或多个Queue。Exchange 通常根据 Binding Key、Routing Key 以及 Headers 属性路由消息。</li>
+<li>PlayLoad：负载，等同说消息。</li>
+</ul>
+<p>扩展阅读：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.confluent.io/kafka-vs-pulsar/">Kafka vs Pulsar - Performance, Features, and Architecture Compared</a></li>
+<li><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/177241.html">AMQP和JMS差异</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/arthinking/p/15422958.html">消息队列那么多，为什么建议深入了解下RabbitMQ？</a></li>
+</ul>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2023
+
+            <span>吹雨听风.</span>
+
+            <span>
+                本站由 <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+                    强力驱动
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/links"
+                       class="whitespace-nowrap text-gray-500 "> 链接 </a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/atom.xml" title="RSS" target="_blank" rel="noopener">RSS</a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/sitemap.xml" title="网站地图" target="_blank" rel="noopener">网站地图</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)" target="_blank" rel="noopener">署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+
+
+
+    </div>
+</div>
+
+</body>
+</html>
