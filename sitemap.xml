@@ -2,42 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://www.wewx.cn/2022/06/19/Portainer-of-QNAP-NA-advanced-gameplay.html</loc>
-    
-    <lastmod>2023-06-01</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/2023/02/14/about-message-queue-you-must-know.html</loc>
-    
-    <lastmod>2023-06-01</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/2018/08/24/docker-expose-publish.html</loc>
-    
-    <lastmod>2023-06-01</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/2017/04/10/explor-https.html</loc>
-    
-    <lastmod>2023-06-01</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.wewx.cn/2022/02/23/file-service-selection.html</loc>
     
     <lastmod>2023-06-01</lastmod>
@@ -155,6 +119,15 @@
   </url>
   
   <url>
+    <loc>https://www.wewx.cn/2023/05/28/my-openai-account-was-disabled.html</loc>
+    
+    <lastmod>2023-06-01</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.wewx.cn/2017/12/08/mySQL-partitioned-table-exploration.html</loc>
     
     <lastmod>2023-06-01</lastmod>
@@ -227,24 +200,6 @@
   </url>
   
   <url>
-    <loc>https://www.wewx.cn/2018/10/10/docker-network-mode-not-complete-guide.html</loc>
-    
-    <lastmod>2023-06-01</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wewx.cn/2018/07/20/docker-network-port-mapping.html</loc>
-    
-    <lastmod>2023-06-01</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.wewx.cn/2023/02/01/sql-transaction.html</loc>
     
     <lastmod>2023-06-01</lastmod>
@@ -273,6 +228,60 @@
   
   <url>
     <loc>https://www.wewx.cn/tags/index.html</loc>
+    
+    <lastmod>2023-06-01</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2022/06/19/Portainer-of-QNAP-NA-advanced-gameplay.html</loc>
+    
+    <lastmod>2023-06-01</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2023/02/14/about-message-queue-you-must-know.html</loc>
+    
+    <lastmod>2023-06-01</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2018/08/24/docker-expose-publish.html</loc>
+    
+    <lastmod>2023-06-01</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2017/04/10/explor-https.html</loc>
+    
+    <lastmod>2023-06-01</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2018/10/10/docker-network-mode-not-complete-guide.html</loc>
+    
+    <lastmod>2023-06-01</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/2018/07/20/docker-network-port-mapping.html</loc>
     
     <lastmod>2023-06-01</lastmod>
     
@@ -410,6 +419,20 @@
   
   <url>
     <loc>https://www.wewx.cn/tags/MinIO/</loc>
+    <lastmod>2023-06-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/tags/OpenAI/</loc>
+    <lastmod>2023-06-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wewx.cn/tags/ChatGPT/</loc>
     <lastmod>2023-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

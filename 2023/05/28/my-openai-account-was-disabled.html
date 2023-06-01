@@ -24,7 +24,7 @@
 <script type="text/javascript" src="/js/theme.js?v="></script>
 <title>
     
-        GitHub 多账号的 SSH 配置 - 吹雨听风
+        我的 ChatGPT 账号被封了 - 吹雨听风
     
 </title>    
 
@@ -69,20 +69,17 @@
             
 <article class="max-w-4xl mx-auto py-10 typo">
     <h1 style="margin-top: 0;">
-        GitHub 多账号的 SSH 配置
+        我的 ChatGPT 账号被封了
     </h1>
 
     <div>
         <div class="flex">
                 <span>
-                    <time datetime="Sun Jan 01 2017 00:00:00 GMT+0000">2017-01-01</time>
+                    <time datetime="Sun May 28 2023 00:00:00 GMT+0000">2023-05-28</time>
                 </span>
 
             
 
-            
-                <span class="px-3 text-gray-300">|</span>
-                <a href="https://learnku.com/articles/4411/github-multi-account-ssh-configuration" title="post.external" target="_blank" rel="noopener">post.external</a>
             
         </div>
 
@@ -90,20 +87,14 @@
     <div class="mt-2">
         <span>标签：</span>
         
-            <a class="" href="/tags/#技术"
-               title="技术">技术</a>
+            <a class="" href="/tags/#OpenAI"
+               title="OpenAI">OpenAI</a>
             
                 <span>,</span>
             
         
-            <a class="" href="/tags/#Docker"
-               title="Docker">Docker</a>
-            
-                <span>,</span>
-            
-        
-            <a class="" href="/tags/#容器"
-               title="容器">容器</a>
+            <a class="" href="/tags/#ChatGPT"
+               title="ChatGPT">ChatGPT</a>
             
         
     </div>
@@ -111,42 +102,18 @@
     </div>
 
     <section class="pt-10 ">
-        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>有这样的情况，现在有 2 个 github 账号。现在都想使用 ssh key 的方式拉取代码。但是第二个账号无法使用，怎么办?</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="1-生成-SSH-key"><a href="#1-生成-SSH-key" class="headerlink" title="1. 生成 SSH key"></a>1. 生成 SSH key</h3><p>1.1 生成第一个 key</p>
-<pre><code>$ ssh-keygen -t rsa -C &quot;user1@email.com&quot;
-</code></pre>
-<p>然后，回车确认即可。最后会生成</p>
-<pre><code>id_rsa
-id_rsa.pub
-</code></pre>
-<p>2个文件。</p>
-<p>1.2 生成第二个 key</p>
-<pre><code>$ ssh-keygen -t rsa -C &quot;user2@email.com&quot;
-</code></pre>
-<p>注意，这里需要给 key 设置名称。要不然会覆盖第一个key，例如:</p>
-<pre><code> ~/.ssh/id_rsa_user2@email.com
-</code></pre>
-<p>至此，我们会得到4个文件。</p>
-<h3 id="2-添加密钥到-SSH-agent-中"><a href="#2-添加密钥到-SSH-agent-中" class="headerlink" title="2. 添加密钥到 SSH agent 中"></a>2. 添加密钥到 SSH agent 中</h3><pre><code>$ ssh-agent bash
-$ ssh-add ~/.ssh/id_rsa_user2@email.com
-</code></pre>
-<h3 id="3-修改-SSH-的-config-配置"><a href="#3-修改-SSH-的-config-配置" class="headerlink" title="3. 修改 SSH 的 config 配置"></a>3. 修改 SSH 的 config 配置</h3><pre><code>$ touch config    
-</code></pre>
-<p>增加:</p>
-<pre><code>HOST user2.github
-hostname github.com
-IdentityFile ~/.ssh/id_rsa_user2@email.com
-User user2@email.com
-</code></pre>
-<h3 id="4-配置公钥"><a href="#4-配置公钥" class="headerlink" title="4. 配置公钥"></a>4. 配置公钥</h3><p>把 id_rsa.pub  和 <a href="mailto:&#x69;&#x64;&#x5f;&#x72;&#x73;&#x61;&#95;&#x75;&#115;&#101;&#114;&#50;&#x40;&#x65;&#109;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#x6d;&#x2e;&#x70;&#117;&#98;">&#x69;&#x64;&#x5f;&#x72;&#x73;&#x61;&#95;&#x75;&#115;&#101;&#114;&#50;&#x40;&#x65;&#109;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#x6d;&#x2e;&#x70;&#117;&#98;</a> 文件的内容添加到对应账号的公钥配置中。</p>
-<h3 id="5-拉取项目"><a href="#5-拉取项目" class="headerlink" title="5. 拉取项目"></a>5. 拉取项目</h3><p>例如，user2 要克隆这个项目:</p>
-<pre><code>git@github.com:EvaEngine/Dockerfiles.git
-</code></pre>
-<p>则执行下面的命令即可:</p>
-<pre><code>$ git clone git@user2.github:EvaEngine/Dockerfiles.git
-</code></pre>
-<p>注意，地址中的 host 替换为了 config 中配置的名称。</p>
-<p>搞定。</p>
+        <p>近期 OpenAI 又在开始大规模封号，在这一波我也没能逃过，顺利躺枪，我自用的一个开通过 GPT Plus 的账号被封，查看邮箱发现昨天 OpenAI 发来了通知邮件，并且订阅 Plus 的钱也全部原路退还。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Dear ChatGPT customer,</span><br><span class="line"></span><br><span class="line">You are receiving this email because we have identified suspicious activity on your account. In order to protect our platform, we have refunded and canceled your subscription. You will no longer have access to ChatGPT Plus service.</span><br><span class="line"></span><br><span class="line">We take fraud prevention very seriously, and we want to ensure that our platform remains a safe and secure place for all our customers. If you believe that this action has been taken in error, we invite you to submit an appeal to have your account reinstated. Please visit [help.openai.com](http://help.openai.com/).</span><br><span class="line"></span><br><span class="line">Thanks for your understanding.</span><br><span class="line"></span><br><span class="line">Best,  </span><br><span class="line">The OpenAI Team</span><br></pre></td></tr></table></figure>
+
+<p>猜测原应，大概和我使用 depay 虚拟信用卡订阅 GPT Plus 有关。</p>
+<p>打算尝试新的方式再次开通：</p>
+<ol>
+<li>申请一个美国电话号码。 现在在互联网上搞事情，号码是必须的，这个是前置条件。</li>
+<li>用实体电话号码开通 Google Voice 虚拟号码。为啥要多次一举呢？因为实体号码稀有啊，风了就没了，但是透过 GV 中转一下就实现了一对多。</li>
+<li>注册美国 AppleID。</li>
+<li>下载 OpenAI App，从 App 内申请开通 GPT Plus。</li>
+</ol>
+<p>肉身在国内想体验这些前沿科技还是有些麻烦，希望用这条路能够走通，等我试试再来更新。</p>
 
     </section>
 </article>
