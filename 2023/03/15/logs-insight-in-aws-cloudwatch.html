@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="website">
+
+<meta name="description" content="吹雨听风独立博客">
+<meta property="og:description" content="吹雨听风独立博客">
+
+
+<meta name="keyword"  content="">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        在 AWS CloudWatch Logs Insights 中进行日志数据的过滤、解析 - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        在 AWS CloudWatch Logs Insights 中进行日志数据的过滤、解析
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Wed Mar 15 2023 00:00:00 GMT+0000">2023-03-15</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+    <div class="mt-2">
+        <span>标签：</span>
+        
+            <a class="" href="/tags/#编程"
+               title="编程">编程</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#aws"
+               title="aws">aws</a>
+            
+        
+    </div>
+
+    </div>
+
+    <section class="pt-10 ">
+        <p>CloudWatch Logs Insights 是一项 AWS 服务，用于分析和查询存储在 CloudWatch 日志中的数据。通过使用 CloudWatch Logs Insights，您可以执行强大的查询操作来过滤、解析和分组日志数据，从而获得有关日志事件的有价值的信息。</p>
+<p>下面是在 CloudWatch Logs Insights 中使用的2个关键操作：过滤（Filter）、解析（Parse）。</p>
+<ol>
+<li>过滤（Filter）：通过使用过滤器，您可以根据特定的条件筛选出感兴趣的日志事件。过滤器可以根据文本内容、时间戳、字段值等进行设置。通过过滤操作，您可以限制查询的范围，仅关注满足特定条件的日志事件。</li>
+<li>解析（Parse）：在 CloudWatch Logs Insights 中，解析操作用于从日志事件中提取特定的字段或信息。解析允许您使用模式匹配来识别和提取感兴趣的数据。您可以根据特定的模式定义解析规则，然后将匹配的数据提取到命名的字段中，以便进一步分析和使用。</li>
+</ol>
+<p>这些操作可以结合使用，以构建复杂和有针对性的查询，以满足您的具体需求。</p>
+<p>假设您有一个应用程序将一个经过字符串化的 JSON 记录到 CloudWatch 日志中，并且您有一个要对这些数据进行某种类型的分析的需求。以下是 JSON 示例：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span> <span class="attr">&quot;request_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;abc123&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/servicea/hello&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;process_time&quot;</span><span class="punctuation">:</span> <span class="number">14.433</span> <span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>以下是记录这个 JSON 时的日志样式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2020-06-25 INFO response from server: &#123; &quot;request_id&quot;: &quot;abc123&quot;, &quot;path&quot;: &quot;/servicea/hello&quot;, &quot;process_time&quot;: 14.433 &#125;</span><br></pre></td></tr></table></figure>
+
+<p>假设您想要按 process_time 从大到小排序查询结构以便对请求做优化。让我们看看如何在 CloudWatch Logs Insights 中构建一个查询，以获得这个输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">|-------------------|--------------|</span><br><span class="line">|  path             | process_time |</span><br><span class="line">|-------------------|--------------|</span><br><span class="line">|  /servicea/hello  | 287.3332     |</span><br><span class="line">|  /servicea/hello  | 125.98323    |</span><br><span class="line">|-------------------|--------------|</span><br></pre></td></tr></table></figure>
+
+<p>首先，由于每个 CloudWatch 日志事件本身就是一个 JSON 对象，我们使用以下方式仅提取出日志消息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fields @message</span><br></pre></td></tr></table></figure>
+
+<p>这样我们就可以得到所有的日志。接下来，让我们过滤掉不需要的日志语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fields @message |</span><br><span class="line">filter @message like &#x27;response from server&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>这样我们就得到了仅包含记录请求响应的日志。</p>
+<p>接下来，我们需要提取 process_time，以便稍后对其进行排序。使用 <code>parse</code> 命令来提取客户端 ID：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">fields @message </span><br><span class="line">| filter @message like &#x27;response from server&#x27;</span><br><span class="line">| parse @message &#x27;&quot;process_time&quot;:*&#125; &#x27;as process_time</span><br><span class="line">| fields @timestamp, @message, abs(process_time) as t</span><br><span class="line">| sort t desc</span><br><span class="line">| limit 200</span><br></pre></td></tr></table></figure>
+
+<p>上述 <code>parse</code> 语句的作用是将我们记录在日志中的 process_time 字段给提取出来，当它在模式中找到类似 * 的通配符时，它将该值提取到以 “as” 后面命名的字段中。但此时是字符串类型，无法对其直接进行排序才做，还需将其换为换数值类型。</p>
+<p>现在，我们就可以获取按照 process_time 从大到小的排序结果。</p>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2023
+
+            <span>吹雨听风.</span>
+
+            <span>
+                本站由 <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+                    强力驱动
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/links"
+                       class="whitespace-nowrap text-gray-500 "> 链接 </a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/atom.xml" title="RSS" target="_blank" rel="noopener">RSS</a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/sitemap.xml" title="网站地图" target="_blank" rel="noopener">网站地图</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)" target="_blank" rel="noopener">署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+
+
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -12,6 +12,7 @@ https://www.wewx.cn/2022/11/22/goroutine-timeout.html
 https://www.wewx.cn/2022/04/16/hexo-theme-snow-white.html
 https://www.wewx.cn/2018/06/01/indexing-knowledge-about-the-mysql-innodb-engine.html
 https://www.wewx.cn/2022/06/22/laravel-from-mysql-migrate-to-sqlite.html
+https://www.wewx.cn/2023/03/15/logs-insight-in-aws-cloudwatch.html
 https://www.wewx.cn/2022/09/02/minio-client-oom.html
 https://www.wewx.cn/2022/05/10/minio-gateway.html
 https://www.wewx.cn/2017/12/08/mySQL-partitioned-table-exploration.html
@@ -45,6 +46,7 @@ https://www.wewx.cn/tags/%E7%BC%96%E7%A8%8B/
 https://www.wewx.cn/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/
 https://www.wewx.cn/tags/MySQL/
 https://www.wewx.cn/tags/Laravel/
+https://www.wewx.cn/tags/aws/
 https://www.wewx.cn/tags/MinIO/
 https://www.wewx.cn/tags/%E5%89%8D%E7%AB%AF/
 https://www.wewx.cn/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/
