@@ -259,3 +259,18 @@ for (const reg of await navigator.serviceWorker.getRegistrations()) {
 | 服务器侧 | Firebase Cloud Messaging Analytics (或 BigQuery Export) | delivered_count、open_count、error_code | 零开发即得；支持与 GA/GTM 关联做漏斗分析 |
 | 前端侧 | Service Worker 埋点 (`push`, `notificationclick`) | delivered、displayed、clicked | 自定义上报 URL，可实时监控到达/点击；可拓展关闭事件 |
 | 数据整合 | messageId / campaignId 关联 | push ➜ open ➜ conversion | 通过数据库 JOIN 或 BigQuery SQL 将发送日志与行为事件拼接以计算到达率、点击率、转化率 |
+
+
+参考：
+- https://developer.chrome.com/docs/extensions/how-to/integrate/web-push?hl=zh-cn
+- https://developer.chrome.com/docs/extensions/how-to/integrate/chrome.gcm?hl=zh-cn
+- https://firebase.google.com/docs/cloud-messaging/fcm-architecture?hl=zh-cn
+- https://firebase.google.com/docs/cloud-messaging/js/receive?hl=zh-cn#web_6
+- https://developer.mozilla.org/zh-CN/docs/Web/API/Push_API
+- https://developer.mozilla.org/zh-CN/docs/Web/API/Service_Worker_API
+- https://blog.mozilla.org/services/2016/08/23/sending-vapid-identified-webpush-notifications-via-mozillas-push-service/
+- https://web.developers.google.cn/articles/push-notifications-overview?hl=zh-cn
+- https://web.developers.google.cn/articles/push-notifications-notification-behaviour?hl=zh-cn#notification_click_event
+- https://web.developers.google.cn/articles/push-notifications-display-a-notification?hl=zh-cn#browsers_and_feature_detection
+- https://web.dev/articles/service-worker-lifecycle?hl=zh-cn
+- https://w3c.github.io/ServiceWorker/#service-worker-lifetime
