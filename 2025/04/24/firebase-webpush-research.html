@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang=zh-CN class="bg-gray-100">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="website">
+
+<meta name="description" content="对 Firebase WebPush 技术的全面调研，包括传统 GCM 与最新 Firebase Cloud Messaging 的对比、Service Worker 支持、生命周期与限制、延迟与优先级、监控方案、广告应用场景等方面的详细分析。">
+<meta property="og:description" content="对 Firebase WebPush 技术的全面调研，包括传统 GCM 与最新 Firebase Cloud Messaging 的对比、Service Worker 支持、生命周期与限制、延迟与优先级、监控方案、广告应用场景等方面的详细分析。">
+
+
+<meta name="keyword" content="Firebase, WebPush, Push API, Service Worker, FCM">
+
+<link rel="shortcut icon" href="/img/favicon.ico">
+
+<link rel="stylesheet" href="/css/tailwind.css">
+
+
+<link rel="stylesheet" href="/css/typo.css">
+
+
+<link rel="stylesheet" href="/css/theme.css">
+
+<script type="text/javascript" src="/js/theme.js?v="></script>
+<title>
+    
+        Firebase WebPush 技术能力调研 - 吹雨听风
+    
+</title>    
+
+<body>
+
+<div class="index-container py-2 md:py-8 px-2 md:px-0">
+    <div class="main-content-wrapper max-w-4xl m-auto bg-white pt-8 pb-6 px-10">
+        <header class="">
+    <div class="max-w-4xl mx-auto">
+        <div class="py-4 border-b border-slate-900/10 border-0 dark:border-slate-300/10 mx-0">
+            <div class="relative sm:flex sm:items-center">
+                <div class="flex-none sm:flex-initial">
+                    <a class="flex-none overflow-hidden md:w-auto" href="/.">
+                        <span class="text-xl font-bold">吹雨听风</span>
+                    </a>
+
+                    
+                        <span class="hidden md:inline-block text-xs text-gray-500"><i> - 热爱写代码. </i></span>
+                    
+                </div>
+
+                <div class="flex-none sm:flex-auto flex items-center sm:justify-end lg:w-0 space-x-4">
+    
+
+    
+
+    
+
+    
+
+    
+</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+        
+        
+
+        <main>
+            
+<article class="max-w-4xl mx-auto py-10 typo">
+    <h1 style="margin-top: 0;">
+        Firebase WebPush 技术能力调研
+    </h1>
+
+    <div>
+        <div class="flex">
+                <span>
+                    <time datetime="Thu Apr 24 2025 02:00:00 GMT+0000">2025-04-24</time>
+                </span>
+
+            
+
+            
+        </div>
+
+        
+    <div class="mt-2">
+        <span>标签：</span>
+        
+            <a class="" href="/tags/#技术"
+               title="技术">技术</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#Firebase"
+               title="Firebase">Firebase</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#WebPush"
+               title="WebPush">WebPush</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#Push API"
+               title="Push API">Push API</a>
+            
+                <span>,</span>
+            
+        
+            <a class="" href="/tags/#Service Worker"
+               title="Service Worker">Service Worker</a>
+            
+        
+    </div>
+
+    </div>
+
+    <section class="pt-10 ">
+        <h2 id="1-传统-GCM-WebPush-的优势与弊端"><a href="#1-传统-GCM-WebPush-的优势与弊端" class="headerlink" title="1. 传统 GCM WebPush 的优势与弊端"></a>1. 传统 GCM WebPush 的优势与弊端</h2><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>优势</th>
+<th>弊端</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>历史沉淀</td>
+<td>最早期 Google 推送方案，安卓生态广泛使用</td>
+<td>2019 年 4 月已宣布停止服务，Chrome 版本 72+ 不再支持 Web GCM</td>
+</tr>
+<tr>
+<td>开发模型</td>
+<td><code>chrome.gcm</code> API 简单、直接</td>
+<td>仅 Chrome 支持，且需打包为扩展 &#x2F; 打包应用，违背 Web 标准</td>
+</tr>
+<tr>
+<td>协议</td>
+<td>走 Google 专有通道，后端接入简单</td>
+<td>基于 HTTP&#x2F;1，效率低；不支持 VAPID 标准；不支持标准 Push API</td>
+</tr>
+<tr>
+<td>功能</td>
+<td>可指定 TTL、优先级</td>
+<td>最大载荷 4 KB；无分组&#x2F;话题；无统计分析</td>
+</tr>
+</tbody></table>
+<h2 id="2-Firebase-WebPush-x2F-GCM-x2F-HTTP-x2F-2-Server-Push-对比"><a href="#2-Firebase-WebPush-x2F-GCM-x2F-HTTP-x2F-2-Server-Push-对比" class="headerlink" title="2. Firebase WebPush &#x2F; GCM &#x2F; HTTP&#x2F;2 Server Push 对比"></a>2. Firebase WebPush &#x2F; GCM &#x2F; HTTP&#x2F;2 Server Push 对比</h2><table>
+<thead>
+<tr>
+<th>能力</th>
+<th>Firebase WebPush (FCM)</th>
+<th>GCM (已废弃)</th>
+<th>HTTP&#x2F;2 Server Push</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>标准化</td>
+<td>基于 W3C Push API + VAPID</td>
+<td>专有</td>
+<td>IETF RFC 7540 (资源推送)</td>
+</tr>
+<tr>
+<td>传输协议</td>
+<td>HTTP&#x2F;2 (FCM endpoint)</td>
+<td>HTTP&#x2F;1</td>
+<td>HTTP&#x2F;2</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>后台消息 + 通知</td>
+<td>后台消息 + 通知</td>
+<td>同一连接内预推资源，页面生命周期内有效</td>
+</tr>
+<tr>
+<td>浏览器支持</td>
+<td>Chrome, Edge, Firefox, Opera, Samsung Internet，Safari 需 APNS；iOS 16.4+ PWA</td>
+<td>仅旧版 Chrome</td>
+<td>所有支持 HTTP&#x2F;2 的浏览器，但非通知</td>
+</tr>
+<tr>
+<td>身份认证</td>
+<td>VAPID &#x2F; FCM Server Key</td>
+<td>GCM Key</td>
+<td>TLS 证书即可</td>
+</tr>
+<tr>
+<td>最大载荷</td>
+<td>4 KB（可附 data）</td>
+<td>4 KB</td>
+<td>N&#x2F;A（推送资源大小）</td>
+</tr>
+<tr>
+<td>优先级</td>
+<td>normal &#x2F; high</td>
+<td>normal &#x2F; high</td>
+<td>无</td>
+</tr>
+<tr>
+<td>分组&#x2F;topic</td>
+<td>支持</td>
+<td>不支持</td>
+<td>N&#x2F;A</td>
+</tr>
+<tr>
+<td>统计分析</td>
+<td>Firebase Analytics&#x2F;BigQuery</td>
+<td>无</td>
+<td>无</td>
+</tr>
+</tbody></table>
+<h2 id="3-Service-Worker-对-WebPush-的支持"><a href="#3-Service-Worker-对-WebPush-的支持" class="headerlink" title="3. Service Worker 对 WebPush 的支持"></a>3. Service Worker 对 WebPush 的支持</h2><ol>
+<li>仅在 HTTPS 环境注册 <code>navigator.serviceWorker.register()</code>。</li>
+<li>通过 <code>PushManager.subscribe()</code> 与浏览器推送服务（如 FCM、Mozilla Push Service、WebPush Proxy）建立订阅，生成 <code>endpoint</code> 与公钥。</li>
+<li>Service Worker 监听事件：<ul>
+<li><code>push</code> — 收到推送数据</li>
+<li><code>notificationclick</code> — 用户点击通知</li>
+<li><code>pushsubscriptionchange</code> — 订阅失效时自动重新订阅</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-基于-Service-Worker-实现-WebPush-可用能力"><a href="#4-基于-Service-Worker-实现-WebPush-可用能力" class="headerlink" title="4. 基于 Service Worker 实现 WebPush 可用能力"></a>4. 基于 Service Worker 实现 WebPush 可用能力</h2><table>
+<thead>
+<tr>
+<th>能力</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>展示通知</td>
+<td><code>self.registration.showNotification()</code>，支持标题、正文、图片、动作按钮、标签、badge、音效等</td>
+</tr>
+<tr>
+<td>后台网络请求</td>
+<td>在 <code>push</code> 事件里可使用 <code>fetch()</code> 从服务器拉取增量数据或确认投递；受 [30 s 事件超时] 制约</td>
+</tr>
+<tr>
+<td>本地存储</td>
+<td>可访问 Cache API、IndexedDB；读写小量数据（如离线消息）</td>
+</tr>
+<tr>
+<td>逻辑处理</td>
+<td>可执行 JS 算法、过滤、去重、根据数据动态决定是否展示通知</td>
+</tr>
+<tr>
+<td>受限点</td>
+<td>无 DOM 访问；长时或大量 CPU 运算可能被杀；某些平台（iOS）禁止后台 fetch</td>
+</tr>
+</tbody></table>
+<h2 id="5-Service-Worker-生命周期与后台限制"><a href="#5-Service-Worker-生命周期与后台限制" class="headerlink" title="5. Service Worker 生命周期与后台限制"></a>5. Service Worker 生命周期与后台限制</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">安装 (install) ➜ 激活 (activate) ➜ 空闲 ➜ 事件触发 (如 push) ➜ 终止 (terminate)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Chrome 桌面</strong>：浏览器未运行时，FCM 进程不会常驻；系统唤醒 Chrome 后才会触发 <code>push</code> 事件 → 通知存在延迟。</li>
+<li><strong>Chrome Android</strong>：依赖系统级 FCM 组件，即使 Chrome 未启动也能收到通知。</li>
+<li><strong>Firefox</strong>：后台进程 <code>firefox --headless</code> 维持 WebPush 通道；完全退出后无法收到。</li>
+<li><strong>Safari</strong>：iOS 16.4+ 仅 PWA 安装后可收，可被 iOS “通知摘要””专注模式”限制。</li>
+</ul>
+<blockquote>
+<p>规范：事件脚本须在 <strong>30 s</strong> 内 <code>event.waitUntil()</code> 结束；否则浏览器可能终止。</p>
+</blockquote>
+<p><strong>何时会被 Terminate？</strong></p>
+<ul>
+<li>脚本空闲继续 30 s（Chrome 桌面&#x2F;Android）、≈ 2–3 min（Firefox）后，浏览器为释放内存而回收。</li>
+<li>前台无相关页面且设备进入低电量 &#x2F; 内存压力场景。</li>
+<li>浏览器升级、标签崩溃或调用 <code>registration.unregister()</code>。</li>
+<li>用户在设置中清除站点数据 &#x2F; 缓存。</li>
+</ul>
+<p><strong>Terminate 后还能接收推送吗？</strong></p>
+<ul>
+<li>可以。终止仅意味着 <em>运行时实例</em> 被销毁，Service Worker 注册信息与 Push 订阅仍保留。</li>
+<li>当下一条推送到达时，浏览器会”冷启动” Service Worker，再次触发 <code>push</code> 事件，随后可继续展示通知或执行逻辑。</li>
+<li>若站点已被用户撤销通知权限、取消订阅或注销 SW，则后续推送不会再投递。</li>
+</ul>
+<h2 id="6-WebPush-延迟与优先级"><a href="#6-WebPush-延迟与优先级" class="headerlink" title="6. WebPush 延迟与优先级"></a>6. WebPush 延迟与优先级</h2><ul>
+<li>FCM 提供 <code>priority</code>: <code>high</code> (即时) &#x2F; <code>normal</code> (省电，Doze 时可能批量投递)。</li>
+<li>TTL (<code>time_to_live</code>) 决定缓存时长 (0–2419200 s)。</li>
+<li>实测在 Wi-Fi 环境 <code>high</code> 消息 &lt; 1 s；移动网 + Doze 可能延迟 15 min+。</li>
+</ul>
+<h3 id="推送频率限制"><a href="#推送频率限制" class="headerlink" title="推送频率限制"></a>推送频率限制</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>限制来源</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FCM 发送速率</td>
+<td>后端 ➜ FCM</td>
+<td>官方未公布硬性 QPS，但文档建议单 token &lt; <strong>1k msg&#x2F;s</strong>，大量并发应分批并遵循 [Retry-After] 429 退避；Topic 推送存在后台配额，超限会被排队或 4xx。</td>
+</tr>
+<tr>
+<td>浏览器 UI 策略</td>
+<td>Chrome</td>
+<td>如站点 1 周内被用户 <strong>连续关闭 3 次通知</strong> 或频繁忽略，Chrome 会启用 <em>Quieter Notification UI</em> 并提示用户自动屏蔽；Manifest 内 <code>description</code>&#x2F;<strong>purpose string</strong> 可降低触发。</td>
+</tr>
+<tr>
+<td>OS 级策略</td>
+<td>Android&#x2F;iOS</td>
+<td>Android 7+ Doze 会合并低优先级消息；同一 <code>collapse_key</code>&#x2F;<code>tag</code> 的通知会被覆盖；iOS Focus&#x2F;Notification Summary 会将高频消息分组延后。</td>
+</tr>
+<tr>
+<td>用户体验</td>
+<td>产品侧</td>
+<td>行业普遍遵循 <strong>≤ 3 推&#x2F;天 &#x2F; 用户</strong>；重要事件即时推送，其余批量 or Digest；提供偏好中心让用户选择类别&#x2F;频率。</td>
+</tr>
+</tbody></table>
+<p><strong>最佳实践</strong></p>
+<ol>
+<li>后端维护 <em>Frequency Control</em>：Redis 计数器或滑动窗口，按用户 &amp; 通知类型限流，如 <code>5/min</code>, <code>20/day</code>。</li>
+<li>在 Payload 中使用 <code>collapse_key</code>（FCM HTTP v1 可用 <code>android.collapse_key</code>、Web 可用 <code>notification.tag</code>）合并同类事件。</li>
+<li>对低优先级消息使用 <code>priority=normal</code> 并延长 <code>ttl</code>，让系统在省电模式下批量下发。</li>
+<li>监控 429&#x2F;5xx 响应，对同一 token 采用指数退避避免被 FCM 封禁。</li>
+<li>观察 Chrome DevTools <em>Application → Push Messaging</em> 报告中的 Quota usage，避免触达上限（实验性）。</li>
+</ol>
+<h2 id="7-到达率-x2F-点击率监控实现"><a href="#7-到达率-x2F-点击率监控实现" class="headerlink" title="7. 到达率 &#x2F; 点击率监控实现"></a>7. 到达率 &#x2F; 点击率监控实现</h2><ol>
+<li><strong>服务器侧</strong>：在 Firebase 控制台开启 Cloud Messaging Analytics，可自动收集到达、打开事件，结合 Google Analytics 报表展示。</li>
+<li><strong>前端侧</strong>：在 <code>push</code> 事件里上报 “收到”; 在 <code>notificationclick</code> 里上报 “点击” 并 clients.openWindow。</li>
+<li><strong>整合</strong>：可将 messageId 置于 payload，在前端回传即可关联。</li>
+</ol>
+<h3 id="自建统计服务方案"><a href="#自建统计服务方案" class="headerlink" title="自建统计服务方案"></a>自建统计服务方案</h3><p>若不依赖 Firebase Analytics &#x2F; BigQuery，可通过以下方式自行采集与计算送达、展示、点击等指标：</p>
+<ol>
+<li><p><strong>事件模型设计</strong><br>定义统一的事件类型与字段，例如：<br>• <code>delivered</code> —— Service Worker 收到 <code>push</code> 事件后立即上报。<br>• <code>displayed</code> —— <code>showNotification()</code> 成功后上报（可在 Promise 解析后）。<br>• <code>clicked</code> —— <code>notificationclick</code> 里上报。<br>• <code>closed</code> —— <code>notificationclose</code>（部分浏览器支持）上报。<br>建议字段：<code>messageId</code>、<code>endpoint</code>、<code>token</code>&#x2F;<code>registrationId</code>、<code>timestamp</code>、<code>userAgent</code>、<code>extra</code>。</p>
+</li>
+<li><p><strong>Service Worker 代码埋点</strong>  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// push 事件</span></span><br><span class="line">self.<span class="title function_">addEventListener</span>(<span class="string">&#x27;push&#x27;</span>, <span class="function"><span class="params">event</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> data = event.<span class="property">data</span>?.<span class="title function_">json</span>() || &#123;&#125;;</span><br><span class="line">  <span class="keyword">const</span> &#123; messageId &#125; = data;</span><br><span class="line">  event.<span class="title function_">waitUntil</span>(</span><br><span class="line">    <span class="title function_">fetch</span>(<span class="string">&#x27;/stats/track&#x27;</span>, &#123;</span><br><span class="line">      <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span>,</span><br><span class="line">      <span class="attr">headers</span>: &#123; <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span> &#125;,</span><br><span class="line">      <span class="attr">body</span>: <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123; <span class="attr">type</span>: <span class="string">&#x27;delivered&#x27;</span>, messageId, <span class="attr">ts</span>: <span class="title class_">Date</span>.<span class="title function_">now</span>() &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  );</span><br><span class="line">  <span class="comment">// ...显示通知...</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">self.<span class="title function_">addEventListener</span>(<span class="string">&#x27;notificationclick&#x27;</span>, <span class="function"><span class="params">event</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; messageId &#125; = event.<span class="property">notification</span>.<span class="property">data</span> || &#123;&#125;;</span><br><span class="line">  event.<span class="title function_">waitUntil</span>(</span><br><span class="line">    <span class="title function_">fetch</span>(<span class="string">&#x27;/stats/track&#x27;</span>, &#123;</span><br><span class="line">      <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span>,</span><br><span class="line">      <span class="attr">headers</span>: &#123; <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span> &#125;,</span><br><span class="line">      <span class="attr">body</span>: <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123; <span class="attr">type</span>: <span class="string">&#x27;clicked&#x27;</span>, messageId, <span class="attr">ts</span>: <span class="title class_">Date</span>.<span class="title function_">now</span>() &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  );</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>后端埋点收集</strong><br>搭建 <code>/stats/track</code> API（REST、GraphQL 或 gRPC）写入高性能时序&#x2F;分析数据库：  </p>
+<ul>
+<li>轻量场景：MySQL&#x2F;PostgreSQL + 表分区。  </li>
+<li>大规模：ClickHouse、Apache Druid、InfluxDB、Kafka ➜ Flink ➜ OLAP。<br>同时保留发送日志（<code>messageId</code>, <code>endpoint</code>, <code>sent_at</code>），即可在离线任务中计算送达率、点击率、平均延迟等。</li>
+</ul>
+</li>
+<li><p><strong>离线与实时分析</strong>  </p>
+<ul>
+<li>离线：每日批量 SQL 聚合或 Spark&#x2F;Flink 批处理。  </li>
+<li>实时：Flink &#x2F; Kafka Streams 维表关联，分钟级监控仪表盘（Grafana、Superset、Metabase）。</li>
+</ul>
+</li>
+<li><p><strong>可靠性细节</strong>  </p>
+<ul>
+<li>端上采用 <code>navigator.sendBeacon</code> 或 IndexedDB 队列，在离线时缓存数据，恢复网络后重传。  </li>
+<li>为避免阻塞 <code>push</code> 事件，可使用 <code>event.waitUntil()</code> 并吞掉 fetch 异常。  </li>
+<li>HTTPS + CORS 配置，确保 SW 可向自建域名上报。</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>注意：Web Push 标准与 FCM 均 <strong>不提供官方投递回执</strong>（delivery receipt）。因此”送达”只能靠 Service Worker 主动回报，可能受设备离线、杀进程等因素影响，需要结合 TTL 与重试策略评估数据完整性。</p>
+</blockquote>
+<h2 id="8-卸载与取消订阅"><a href="#8-卸载与取消订阅" class="headerlink" title="8. 卸载与取消订阅"></a>8. 卸载与取消订阅</h2><h3 id="取消订阅"><a href="#取消订阅" class="headerlink" title="取消订阅"></a>取消订阅</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sub = <span class="keyword">await</span> registration.<span class="property">pushManager</span>.<span class="title function_">getSubscription</span>();</span><br><span class="line"><span class="keyword">if</span> (sub) &#123;</span><br><span class="line">  <span class="keyword">await</span> sub.<span class="title function_">unsubscribe</span>(); <span class="comment">// 向浏览器推送服务注销</span></span><br><span class="line">  <span class="keyword">await</span> <span class="title function_">fetch</span>(<span class="string">&#x27;/api/removeToken&#x27;</span>, &#123; <span class="attr">body</span>: sub.<span class="property">endpoint</span>, <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span> &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="清理-Service-Worker"><a href="#清理-Service-Worker" class="headerlink" title="清理 Service Worker"></a>清理 Service Worker</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> reg <span class="keyword">of</span> <span class="keyword">await</span> navigator.<span class="property">serviceWorker</span>.<span class="title function_">getRegistrations</span>()) &#123;</span><br><span class="line">  <span class="keyword">await</span> reg.<span class="title function_">unregister</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用户亦可在浏览器 <strong>设置 → 隐私与安全 → 网站设置 → 通知</strong> 手动移除。</p>
+<h2 id="9-FCM-Web-Push-的消息类型"><a href="#9-FCM-Web-Push-的消息类型" class="headerlink" title="9. FCM Web Push 的消息类型"></a>9. FCM Web Push 的消息类型</h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>字段</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Notification Message</td>
+<td><code>notification</code></td>
+<td>后端直接定义标题&#x2F;正文&#x2F;图标；浏览器自动展示</td>
+</tr>
+<tr>
+<td>Data Message</td>
+<td><code>data</code></td>
+<td>仅传输键值对，完全由前端代码决定展示</td>
+</tr>
+<tr>
+<td>Mixed</td>
+<td><code>notification</code> + <code>data</code></td>
+<td>同时由系统展示 + 传输自定义数据</td>
+</tr>
+<tr>
+<td>Webpush Options</td>
+<td><code>webpush</code></td>
+<td>针对 Web 的 <code>headers</code>, <code>fcm_options</code>, <code>notification</code> 子字段</td>
+</tr>
+</tbody></table>
+<h2 id="10-Firebase-控制台简介"><a href="#10-Firebase-控制台简介" class="headerlink" title="10. Firebase 控制台简介"></a>10. Firebase 控制台简介</h2><ul>
+<li>Cloud Messaging 面板：生成 Web API Key，查看注册 Token 数；可按 <strong>Topic</strong>、<strong>Segment</strong>、<strong>测试设备</strong> 发送。</li>
+<li>Campaign：A&#x2F;B 测试、计划发送、目标分析。</li>
+<li>报表：送达率、打开率、转化漏斗；可导出到 BigQuery。</li>
+</ul>
+<h2 id="11-Service-Worker-是否必须依赖-PWA？"><a href="#11-Service-Worker-是否必须依赖-PWA？" class="headerlink" title="11. Service Worker 是否必须依赖 PWA？"></a>11. Service Worker 是否必须依赖 PWA？</h2><p>否。推送功能只要求：</p>
+<ol>
+<li>站点 HTTPS。</li>
+<li>注册 Service Worker。</li>
+<li>获得用户通知权限。</li>
+</ol>
+<p>是否被安装为 PWA (<code>beforeinstallprompt</code>) 不影响推送，虽然安装后能获得 iOS 通知、后台运行等额外好处。</p>
+<h2 id="12-Push-API-规范之外的厂商自定义层"><a href="#12-Push-API-规范之外的厂商自定义层" class="headerlink" title="12. Push API 规范之外的厂商自定义层"></a>12. Push API 规范之外的厂商自定义层</h2><p>浏览器&#x2F;平台厂商在标准 Push API 之上仍掌控了<strong>推送服务（Push Service）</strong>及<strong>系统级 UX 行为</strong>，主要差异体现在以下方面：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>可由厂商自定义</th>
+<th>风险 &#x2F; 限制</th>
+<th>带来的好处</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Push Service Endpoint</td>
+<td>域名、认证方式（VAPID&#x2F;Server Key）、HTTP v1&#x2F;v2 API 细节</td>
+<td>端点变更或停服（GCM 实例），不同浏览器需适配多套服务</td>
+<td>全球 CDN、长连接优化、DDoS 保护</td>
+</tr>
+<tr>
+<td>消息排队与 TTL 处理</td>
+<td>排队深度、<code>ttl</code> 上限、过期策略</td>
+<td>超限丢弃、队列延迟不可见</td>
+<td>节省终端流量、电量；在离线时缓存消息</td>
+</tr>
+</tbody></table>
+<h2 id="13-Push-推送在广告领域的应用"><a href="#13-Push-推送在广告领域的应用" class="headerlink" title="13. Push 推送在广告领域的应用"></a>13. Push 推送在广告领域的应用</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>具体做法</th>
+<th>价值</th>
+<th>风险与合规</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>重定向 &#x2F; 再营销</td>
+<td>识别近期开启但未转化的用户，推送限时优惠、购物车遗留提醒</td>
+<td>CTR 10–30%，转化率高于 EDM</td>
+<td>需征得通知权限；避免高频打扰导致退订</td>
+</tr>
+<tr>
+<td>精准分群投放</td>
+<td>结合浏览行为、购买力、兴趣标签，将 token 映射至 DMP 受众包</td>
+<td>提高投放 ROI</td>
+<td>GDPR&#x2F;CCPA 要求可追溯同意；需做好数据脱敏</td>
+</tr>
+<tr>
+<td>地理围栏广告</td>
+<td>端上 Service Worker 在 <code>push</code> 时判断 <code>navigator.geolocation</code> 或携带定位，推送附近门店优惠</td>
+<td>促进到店转化</td>
+<td>iOS&#x2F;Safari 不支持后台定位；需请求额外权限</td>
+</tr>
+<tr>
+<td>A&#x2F;B Creative 测试</td>
+<td>同一活动随机发送不同素材，前端上报打开&#x2F;点击回流</td>
+<td>快速验证文案、图片效果</td>
+<td>样本量需足够；注意同时控制频率</td>
+</tr>
+<tr>
+<td>Programmatic Buy</td>
+<td>DSP 实时竞价系统针对 webpush 订阅 ID 发送竞价消息，Service Worker 拉取广告素材并显示</td>
+<td>构建新渠道，低流量成本</td>
+<td>生态尚不成熟；浏览器政策审查严格</td>
+</tr>
+<tr>
+<td>品牌曝光 &amp; 回忆曲线</td>
+<td>计划性每日&#x2F;每周推送品牌故事或内容</td>
+<td>维系品牌认知</td>
+<td>需要 Frequency Capping；易被视为骚扰</td>
+</tr>
+</tbody></table>
+<h3 id="广告素材规范"><a href="#广告素材规范" class="headerlink" title="广告素材规范"></a>广告素材规范</h3><ul>
+<li>通知标题 ≤ 50 字符，正文 ≤ 120 字符，避免误导或高频营销词。</li>
+<li><code>icon</code> 建议使用品牌 Logo；<code>image</code> (Chrome v59+) 可传 2:1 Banner 展示更丰富视觉。</li>
+<li>必须提供 <em>action button</em> 描述，例如”查看详情 &#x2F; 立即购买”。</li>
+<li>禁止使用自动下载、成人内容、虚假中奖等违规素材，违反可被浏览器封禁。</li>
+</ul>
+<h3 id="效果测量与归因"><a href="#效果测量与归因" class="headerlink" title="效果测量与归因"></a>效果测量与归因</h3><ol>
+<li>在 payload 写入 <code>campaign_id</code>、<code>creative_id</code>，前端所有埋点回流该字段。</li>
+<li>打开落地页时在 URL 带上 UTM &amp; deep link，如 <code>utm_source=webpush&amp;utm_campaign=summer_sale</code>。</li>
+<li>后端结合 <strong>发送 ➜ 展示 ➜ 点击 ➜ 转化</strong> 四级漏斗计算 eCPM &#x2F; eCPC &#x2F; eCPA。</li>
+</ol>
+<h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><ol>
+<li><strong>Frequency Capping</strong>：结合第 6 节策略，广告型通知建议 ≤1 次&#x2F;日。 </li>
+<li><strong>用户偏好中心</strong>：允许用户订阅&#x2F;退订不同广告类别，提升留存。 </li>
+<li><strong>渐进授权</strong>：先获取通知权限，再在设置页引导同意”个性化广告”。 </li>
+<li><strong>合规透明</strong>：隐私政策列明数据用途，提供”一键退订”。</li>
+</ol>
+<h2 id="14-监控层-数据采集点-x2F-工具-关键指标-说明"><a href="#14-监控层-数据采集点-x2F-工具-关键指标-说明" class="headerlink" title="14. 监控层 | 数据采集点 &#x2F; 工具 | 关键指标 | 说明"></a>14. 监控层 | 数据采集点 &#x2F; 工具 | 关键指标 | 说明</h2><table>
+<thead>
+<tr>
+<th>监控层</th>
+<th>数据采集点 &#x2F; 工具</th>
+<th>关键指标</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>服务器侧</td>
+<td>Firebase Cloud Messaging Analytics (或 BigQuery Export)</td>
+<td>delivered_count、open_count、error_code</td>
+<td>零开发即得；支持与 GA&#x2F;GTM 关联做漏斗分析</td>
+</tr>
+<tr>
+<td>前端侧</td>
+<td>Service Worker 埋点 (<code>push</code>, <code>notificationclick</code>)</td>
+<td>delivered、displayed、clicked</td>
+<td>自定义上报 URL，可实时监控到达&#x2F;点击；可拓展关闭事件</td>
+</tr>
+<tr>
+<td>数据整合</td>
+<td>messageId &#x2F; campaignId 关联</td>
+<td>push ➜ open ➜ conversion</td>
+<td>通过数据库 JOIN 或 BigQuery SQL 将发送日志与行为事件拼接以计算到达率、点击率、转化率</td>
+</tr>
+</tbody></table>
+
+    </section>
+</article>
+        </main>
+
+        <footer class="max-w-4xl mx-auto py-2 border-t border-solid border-gray-100 text-xs pb-5">
+    <div class="sm:flex space-y-2 sm:space-y-0">
+        <div class="sm:flex-initial">
+            
+            &copy;
+            
+                2018 -
+            
+            2025
+
+            <span>吹雨听风.</span>
+
+            <span>
+                本站由 <a class="hexo-link " target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and
+                <a target="_blank" rel="noopener" href="https://github.com/cmzz/hexo-theme-snow-white">Snow White</a>
+                
+                    强力驱动
+                
+            </span>
+        </div>
+
+        <div class="flex sm:flex-initial items-center">
+            
+
+            
+
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/links"
+                       class="whitespace-nowrap text-gray-500 "> 链接 </a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/atom.xml" title="RSS" target="_blank" rel="noopener">RSS</a>
+                </span>
+            
+
+            
+                <span class="inline-block px-2 text-xs text-gray-400 hidden sm:inline-block">|</span>
+                <span>
+                    <a href="/sitemap.xml" title="网站地图" target="_blank" rel="noopener">网站地图</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" title="署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)" target="_blank" rel="noopener">署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)</a>
+    </div>
+</footer>
+
+
+
+
+    </div>
+</div>
+
+</body>
+</html>
